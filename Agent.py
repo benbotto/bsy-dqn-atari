@@ -32,7 +32,7 @@ TARGET_UPD_INTERVAL = 10000
 SAVE_WEIGHTS_INTERVAL = 500000
 
 # Keep a running average reward over this may episodes.
-AVG_REWARD_EPISODES = 100
+AVG_REWARD_EPISODES = 500
 
 class Agent:
   '''
