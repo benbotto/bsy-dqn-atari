@@ -9,12 +9,6 @@ EPSILON_MIN         = .1
 EPSILON_DECAY_OVER  = 1000000
 EPSILON_DECAY_RATE  = (EPSILON_MIN - 1) / EPSILON_DECAY_OVER
 
-# When to start training.
-TRAIN_START = 50000
-
-# The size of the replay batch to train on.
-REP_BATCH_SIZE = 32
-
 # Replays are stored in the format (s, a, r, s', done).
 REP_LASTOBS = 0
 REP_ACTION  = 1
@@ -22,29 +16,41 @@ REP_REWARD  = 2
 REP_NEWOBS  = 3
 REP_DONE    = 4
 
-# Discount factor.
-GAMMA = .99
-
-# How often to update the target network.
-TARGET_UPD_INTERVAL = 10000
-
-# How often to save network weights.
-SAVE_WEIGHTS_INTERVAL = 500000
-
-# Keep a running average reward over this may episodes.
-AVG_REWARD_EPISODES = 500
-
 class Agent:
   '''
    ' Init.
   '''
-  def __init__(self, env, memory, model, target_model, model_file_name):
-    self._env            = env
-    self._memory         = memory
-    self._model          = model
-    self._target_model   = target_model
-    self.model_file_name = model_file_name
-    self._reward_que     = deque([], maxlen=AVG_REWARD_EPISODES)
+  def __init__(self, env, memory, model, target_model):
+    self._env          = env
+    self._memory       = memory
+    self._model        = model
+    self._target_model = target_model
+
+    # Store and stacks the frames for easy access.  The DQN paper use the last
+    # four frames as an observation.
+    self._frames = FrameBuffer(self._model.stacked_frames)
+
+    ##
+    # Tunable parameters.
+    ##
+
+    # When to start training.
+    self.train_start = 50000
+
+    # The size of the replay batch to train on.
+    self.replay_batch_size = 32
+
+    # Discount factor.
+    self.gamma = .99
+
+    # How often to update the target network (in frames).
+    self.target_upd_interval = 10000
+
+    # How often to save network weights.
+    self.save_weights_interval = 500000
+
+    # Keep a running average reward over this may episodes.
+    self.avg_reward_episodes = 500
 
   '''
    ' Decaying epsilon based on total timesteps.
@@ -53,12 +59,25 @@ class Agent:
     return max(EPSILON_DECAY_RATE * total_t + 1, EPSILON_MIN)
 
   '''
-   ' Train the model.
+   ' Process an observation.
   '''
-  def train(self):
-    # Store and stacks the frames for easy access.  The DQN paper use the last
-    # four frames as an observation.
-    frames = FrameBuffer(self._model.stacked_frames)
+  def process_obs(self, obs):
+    return self._frames.add_frame(
+      preprocess_frame(obs, self._model.frame_width, self._model.frame_height))
+
+  '''
+   ' Process a reward.
+  '''
+  def process_reward(self, reward):
+    # Rewards are clipped to -1, 0, and 1 per the Nature paper.
+    return np.sign(reward)
+
+  '''
+   ' Run the agent.
+  '''
+  def run(self):
+    # For keeping the average reward over time.
+    reward_que = deque([], maxlen=self.avg_reward_episodes)
 
     # Number of full games played.
     episode = 0
@@ -77,8 +96,7 @@ class Agent:
 
       # Frames get preprocessed (converted to grayscale and scaled down by a
       # factor of two) then stacked.
-      last_obs = frames.add_frame(preprocess_frame(self._env.reset(),
-        self._model.frame_width, self._model.frame_height))
+      last_obs = self.process_obs(self._env.reset())
 
       while not done:
         t       += 1
@@ -90,7 +108,7 @@ class Agent:
         # predict the action using the network model.
         epsilon = self.get_epsilon(total_t)
 
-        if self._memory.size() < TRAIN_START or np.random.rand() < epsilon:
+        if self._memory.size() < self.train_start or np.random.rand() < epsilon:
           action = self._env.action_space.sample()
         else:
           # Run the inputs through the network to predict an action and get the Q
@@ -103,19 +121,16 @@ class Agent:
 
         # Apply the action.
         new_obs, reward, done, _ = self._env.step(action)
-        new_obs = frames.add_frame(preprocess_frame(new_obs,
-          self._model.frame_width, self._model.frame_height))
+        new_obs = self.process_obs(new_obs)
         episode_reward += reward
-
-        # Rewards are clipped to -1, 0, and 1 per the Nature paper.
-        reward = np.sign(reward)
+        reward = self.process_reward(reward)
 
         # Store the replay memory in (s, a, r, s', t) form.
         self._memory.add((last_obs, action, reward, new_obs, done))
 
-        if self._memory.size() >= TRAIN_START:
+        if self._memory.size() >= self.train_start:
           # Random sample from replay memory to train on.
-          batch = self._memory.get_random_sample(REP_BATCH_SIZE)
+          batch = self._memory.get_random_sample(self.replay_batch_size)
 
           # Array of old and new observations.
           last_observations = np.array([rep[REP_LASTOBS] for rep in batch])
@@ -139,24 +154,24 @@ class Agent:
               # reward, discounted.  A discount factor (gamma) of one weighs
               # heavily toward future rewards, whereas a discount factor of
               # zero only considers immediate rewards.
-              target[i][batch[i][REP_ACTION]] = batch[i][REP_REWARD] + GAMMA * new_q[i][act]
+              target[i][batch[i][REP_ACTION]] = batch[i][REP_REWARD] + self.gamma * new_q[i][act]
 
           mse = self._model.train_on_batch(last_observations, target)
           #print(mse)
 
-          if total_t % TARGET_UPD_INTERVAL == 0:
+          if total_t % self.target_upd_interval == 0:
             self._model.copy_weights_to(self._target_model)
 
-          if total_t % SAVE_WEIGHTS_INTERVAL == 0:
-            self._model.save(self.model_file_name)
+          if total_t % self.save_weights_interval == 0:
+            self._model.save()
 
         last_obs = new_obs
 
       if episode_reward > max_reward:
         max_reward = episode_reward
 
-      self._reward_que.append(episode_reward)
-      avg_reward = sum(self._reward_que) / len(self._reward_que)
+      reward_que.append(episode_reward)
+      avg_reward = sum(reward_que) / len(reward_que)
 
       print('Episode: {} Timesteps: {} Total timesteps: {} Reward: {} Best reward: {} Average: {}'
         .format(episode, t, total_t, episode_reward, max_reward, avg_reward))
