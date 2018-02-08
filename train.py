@@ -20,8 +20,9 @@ def main(argv):
   # Build the network model for the environment.  The inputs are images, which
   # are preprocessed (grayscaled and scaled down by a factor of two), then
   # stacked so that the agent can determine things like velocity.
-  model        = NetworkModel(env)
-  target_model = NetworkModel(env)
+  model        = NetworkModel(model_file_name, env)
+  target_model = NetworkModel(model_file_name, env)
+  return
 
   model.copy_weights_to(target_model)
 
@@ -30,7 +31,7 @@ def main(argv):
 
   # Create the agent and start training.
   agent = Agent(env, memory, model, target_model, model_file_name)
-  agent.train()
+  agent.run()
 
 if __name__ == "__main__":
   main(sys.argv)
