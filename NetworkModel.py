@@ -1,19 +1,33 @@
 import numpy as np
+import os.path
 import tensorflow as tf
 
 class NetworkModel:
   '''
    ' Init.
   '''
-  def __init__(self, env, learn_rate=0.00025):
-    self.obs_shape      = env.observation_space.shape
-    self.stacked_frames = 4
-    self.frame_width    = int(self.obs_shape[0] / 2)
-    self.frame_height   = int(self.obs_shape[1] / 2)
-    self.input_shape    = (self.stacked_frames, self.frame_width, self.frame_height)
-    self.act_size       = env.action_space.n
-    self.learn_rate     = learn_rate
+  def __init__(self, model_file_name, env, learn_rate=0.00025):
+    self.obs_shape       = env.observation_space.shape
+    self.stacked_frames  = 4
+    self.frame_width     = int(self.obs_shape[0] / 2)
+    self.frame_height    = int(self.obs_shape[1] / 2)
+    self.input_shape     = (self.stacked_frames, self.frame_width, self.frame_height)
+    self.act_size        = env.action_space.n
+    self.learn_rate      = learn_rate
+    self.model_file_name = model_file_name
 
+    # Load the network from a save file.
+    if os.path.isfile(self.model_file_name):
+      print('Loading model from file {}.'.format(self.model_file_name))
+      self.load()
+    else:
+      print('Building model.')
+      self.build()
+
+  '''
+   ' Build the model.  Override this in specific classes.
+  '''
+  def build(self):
     # Build the model, as defined by the Nature paper on DQN by
     # David Silver et. al.
     self.network = tf.keras.models.Sequential()
@@ -39,8 +53,14 @@ class NetworkModel:
   '''
    ' Save the weights to a file.
   '''
-  def save(self, model_file_name):
-    self.network.save(model_file_name)
+  def save(self):
+    self.network.save(self.model_file_name)
+
+  '''
+   ' Load the weights from a file.
+  '''
+  def load(self):
+    self.network = tf.keras.models.load_model(self.model_file_name)
 
   '''
    ' Make a prediction based on an observation.
@@ -49,7 +69,7 @@ class NetworkModel:
     return self.network.predict(obs)
 
   '''
-   ' Train the model on a batch of inputs (frames) and expectations (reward
+   ' Train the model on a batch of inputs (observations) and expectations (reward
    ' predictions).
   '''
   def train_on_batch(self, observations, expectations):
