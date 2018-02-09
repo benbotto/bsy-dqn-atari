@@ -1,5 +1,5 @@
 import numpy as np
-from Agent import Agent
+from agent.agent import Agent
 
 # Replays are stored in the format (s, a, r, s', done).
 REP_LASTOBS = 0

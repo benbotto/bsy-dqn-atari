@@ -1,5 +1,5 @@
 import numpy as np
-from TrainerAgent import TrainerAgent
+from agent.trainer_agent import TrainerAgent
 
 class AtariRamTrainerAgent(TrainerAgent):
   '''

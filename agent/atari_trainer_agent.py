@@ -1,7 +1,7 @@
 import numpy as np
-from image_utils import preprocess_frame
-from FrameBuffer import FrameBuffer
-from TrainerAgent import TrainerAgent
+from agent.trainer_agent import TrainerAgent
+from util.image_utils import preprocess_frame
+from util.frame_buffer import FrameBuffer
 
 class AtariTrainerAgent(TrainerAgent):
   '''

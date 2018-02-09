@@ -1,8 +1,8 @@
 import sys
 import gym
-from AtariRamNetworkModel import AtariRamNetworkModel
-from ReplayMemory import ReplayMemory
-from AtariRamTrainerAgent import AtariRamTrainerAgent
+from network_model.atari_ram_network_model import AtariRamNetworkModel
+from replay_memory.replay_memory import ReplayMemory
+from agent.atari_ram_trainer_agent import AtariRamTrainerAgent
 
 REP_SIZE = 1000000
 

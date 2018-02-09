@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from NetworkModel import NetworkModel
+from network_model.network_model import NetworkModel
 
 class AtariRamNetworkModel(NetworkModel):
   '''
