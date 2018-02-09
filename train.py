@@ -1,8 +1,8 @@
 import sys
 import gym
-from NetworkModel import NetworkModel
+from AtariNetworkModel import AtariNetworkModel
 from ReplayMemory import ReplayMemory
-from Agent import Agent
+from AtariTrainerAgent import AtariTrainerAgent
 
 REP_SIZE = 600000
 
@@ -20,9 +20,8 @@ def main(argv):
   # Build the network model for the environment.  The inputs are images, which
   # are preprocessed (grayscaled and scaled down by a factor of two), then
   # stacked so that the agent can determine things like velocity.
-  model        = NetworkModel(model_file_name, env)
-  target_model = NetworkModel(model_file_name, env)
-  return
+  model        = AtariNetworkModel(model_file_name, env).create_network()
+  target_model = AtariNetworkModel(model_file_name, env).create_network()
 
   model.copy_weights_to(target_model)
 
@@ -30,7 +29,7 @@ def main(argv):
   memory = ReplayMemory(REP_SIZE)
 
   # Create the agent and start training.
-  agent = Agent(env, memory, model, target_model, model_file_name)
+  agent = AtariTrainerAgent(env, model, target_model, memory)
   agent.run()
 
 if __name__ == "__main__":
