@@ -1,0 +1,4 @@
+Maybe rename trainers to train-atari.py and train-atari-ram.py.
+Move Agents to agent folder.
+Move NetworkModels to network_model folder.
+Write test agents.
