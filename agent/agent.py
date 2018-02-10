@@ -78,6 +78,6 @@ class Agent(ABC):
    ' Run the agent.
   '''
   @abstractmethod
-  def run(self):
+  def run(self, num_episodes):
     pass
 

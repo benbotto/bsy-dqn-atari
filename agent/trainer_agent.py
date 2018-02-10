@@ -52,14 +52,14 @@ class TrainerAgent(Agent):
   '''
    ' Run the agent.
   '''
-  def run(self):
+  def run(self, num_episodes=100000000):
     # Number of full games played.
     episode = 0
 
     # Total timesteps.
     total_t = 0
 
-    while True:
+    while episode < num_episodes:
       episode       += 1
       done           = False
       t              = 0 # t is the timestep.
