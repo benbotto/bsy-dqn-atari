@@ -1,5 +1,6 @@
 import numpy as np
 from agent.agent import Agent
+from abc import abstractmethod
 
 # Replays are stored in the format (s, a, r, s', done).
 REP_LASTOBS = 0
@@ -42,6 +43,12 @@ class TrainerAgent(Agent):
     EPSILON_DECAY_OVER       = 1000000
     self.epsilon_min         = .1
     self.epsilon_decay_rate  = (self.epsilon_min - 1) / EPSILON_DECAY_OVER
+
+    # How often to test the target model (in episodes).
+    self.test_interval = 100
+
+    # How many episodes to test for.
+    self.test_episodes = 2
 
   '''
    ' Decaying epsilon based on total timesteps.
@@ -144,4 +151,15 @@ class TrainerAgent(Agent):
 
       print('Episode: {} Timesteps: {} Total timesteps: {} Reward: {} Best reward: {} Average: {}'
         .format(episode, t, total_t, episode_reward, self.get_max_reward(), self.get_average_reward()))
+
+      if episode % self.test_interval == 0:
+        print('Testing model.')
+        self.test()
+
+  '''
+   ' Test the model.
+  '''
+  @abstractmethod
+  def test(self):
+    pass
 

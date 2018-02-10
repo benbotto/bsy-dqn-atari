@@ -2,6 +2,7 @@ import numpy as np
 from agent.trainer_agent import TrainerAgent
 from util.image_utils import preprocess_frame
 from util.frame_buffer import FrameBuffer
+from agent.atari_tester_agent import AtariTesterAgent
 
 class AtariTrainerAgent(TrainerAgent):
   '''
@@ -21,4 +22,11 @@ class AtariTrainerAgent(TrainerAgent):
   def process_obs(self, obs):
     return self._frames.add_frame(
       preprocess_frame(obs, self._model.frame_width, self._model.frame_height))
+
+  '''
+   ' Test the model.
+  '''
+  def test(self):
+    test_agent = AtariTesterAgent(self._env, self._target_model)
+    test_agent.run(self.test_episodes)
 
