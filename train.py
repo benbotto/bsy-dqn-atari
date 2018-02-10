@@ -4,7 +4,7 @@ from network_model.atari_network_model import AtariNetworkModel
 from replay_memory.replay_memory import ReplayMemory
 from agent.atari_trainer_agent import AtariTrainerAgent
 
-REP_SIZE = 600000
+REP_SIZE = 1000000
 
 def main(argv):
   if len(argv) != 3:
