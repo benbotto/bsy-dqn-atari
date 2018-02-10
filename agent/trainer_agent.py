@@ -66,7 +66,7 @@ class TrainerAgent(Agent):
       episode_reward = 0
 
       # Reset the environment to get the initial observation.
-      last_obs = self.process_obs(self._env.reset())
+      last_obs = self.process_obs(self.reset())
 
       while not done:
         t       += 1
@@ -90,7 +90,7 @@ class TrainerAgent(Agent):
           action = np.argmax(Q)
 
         # Apply the action.
-        new_obs, reward, done, _ = self._env.step(action)
+        new_obs, reward, done, _ = self.step(action)
         new_obs = self.process_obs(new_obs)
         episode_reward += reward
         reward = self.process_reward(reward)
