@@ -2,13 +2,6 @@ from abc import ABC, abstractmethod
 import numpy as np
 from collections import deque
 
-# Replays are stored in the format (s, a, r, s', done).
-REP_LASTOBS = 0
-REP_ACTION  = 1
-REP_REWARD  = 2
-REP_NEWOBS  = 3
-REP_DONE    = 4
-
 # Keep a running average reward over this may episodes.
 AVG_REWARD_EPISODES = 500
 
@@ -47,6 +40,18 @@ class Agent(ABC):
   '''
   def process_reward(self, reward):
     return np.sign(reward)
+
+  '''
+   ' Reset the environment.
+  '''
+  def reset(self):
+    return self._env.reset()
+
+  '''
+   ' Step the environment.
+  '''
+  def step(self, action):
+    return self._env.step(action)
 
   '''
    ' Track episode rewards.
