@@ -26,5 +26,5 @@ class AtariRamNetworkModel(NetworkModel):
 
     opt = tf.keras.optimizers.RMSprop(lr=self.learn_rate)
 
-    self.network.compile(loss="logcosh", optimizer=opt)
+    self.network.compile(loss=huber_loss, optimizer=opt)
 
