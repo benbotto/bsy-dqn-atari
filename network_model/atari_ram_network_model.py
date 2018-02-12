@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from network_model.network_model import NetworkModel
+from network_model.loss import huber_loss
 
 class AtariRamNetworkModel(NetworkModel):
   '''
@@ -25,5 +26,5 @@ class AtariRamNetworkModel(NetworkModel):
 
     opt = tf.keras.optimizers.RMSprop(lr=self.learn_rate)
 
-    self.network.compile(loss="mean_squared_error", optimizer=opt)
+    self.network.compile(loss="logcosh", optimizer=opt)
 
