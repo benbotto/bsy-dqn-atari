@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 
 '''
  ' Huber loss.
@@ -8,8 +9,11 @@ import numpy as np
  ' The first link has a nice math trick to avoid a tf.where.
 '''
 def huber_loss(y_true, y_pred, clip_delta=1.0):
-  error          = np.abs(y_true - y_pred)
-  quadratic_part = np.minimum(error, clip_delta)
+  error = y_true - y_pred
+  cond  = tf.keras.backend.abs(error) < clip_delta
 
-  return 0.5 * np.square(quadratic_part) + clip_delta * (error - quadratic_part)
+  squared_loss = 0.5 * tf.keras.backend.square(error)
+  linear_loss  = clip_delta * (tf.keras.backend.abs(error) - 0.5 * clip_delta)
+
+  return tf.where(cond, squared_loss, linear_loss)
 
