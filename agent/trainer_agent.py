@@ -45,7 +45,10 @@ class TrainerAgent(Agent):
     self.epsilon_decay_rate  = (self.epsilon_min - 1) / EPSILON_DECAY_OVER
 
     # How often to test the target model (in episodes).
-    self.test_interval = 100
+    self.test_interval = 200
+
+    # When to start testing.
+    self.test_start = 1000000
 
     # How many episodes to test for.
     self.test_episodes = 2
@@ -152,7 +155,7 @@ class TrainerAgent(Agent):
       print('Episode: {} Timesteps: {} Total timesteps: {} Reward: {} Best reward: {} Average: {}'
         .format(episode, t, total_t, episode_reward, self.get_max_reward(), self.get_average_reward()))
 
-      if episode % self.test_interval == 0:
+      if total_t >= self.test_start and episode % self.test_interval == 0:
         print('Testing model.')
         self.test()
 
