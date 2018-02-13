@@ -24,7 +24,7 @@ class AtariRamNetworkModel(NetworkModel):
     self.network.add(tf.keras.layers.Dense(128, activation="relu"))
     self.network.add(tf.keras.layers.Dense(self.act_size, activation="linear"))
 
-    opt = tf.keras.optimizers.RMSprop(lr=self.learn_rate)
+    opt = tf.keras.optimizers.Adam(lr=self.learn_rate)
 
     self.network.compile(loss=huber_loss, optimizer=opt)
 
