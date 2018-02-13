@@ -20,7 +20,7 @@ class Agent(ABC):
     self._reward_que = deque([], maxlen=AVG_REWARD_EPISODES)
 
     # For keeping track of the maximum reward over time.
-    self._max_reward = 0
+    self._max_reward = -1000000
 
   '''
    ' Epsilon-greedy policy is used.
