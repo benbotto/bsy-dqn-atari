@@ -2,13 +2,13 @@ import numpy as np
 import os.path
 import tensorflow as tf
 from abc import ABC, abstractmethod
-from network_model.loss import huber_loss
+from network_model.loss import huber_loss, huber_loss_mean
 
 class NetworkModel(ABC):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, learn_rate=0.00025):
+  def __init__(self, model_file_name, env, learn_rate=1e-4):
     self.obs_shape       = env.observation_space.shape
     self.act_size        = env.action_space.n
     self.learn_rate      = learn_rate
@@ -58,7 +58,8 @@ class NetworkModel(ABC):
   '''
   def load(self):
     print('Loading model weights from {}.'.format(self.model_file_name))
-    self.network = tf.keras.models.load_model(self.model_file_name, custom_objects={'huber_loss': huber_loss})
+    self.network = tf.keras.models.load_model(self.model_file_name,
+      custom_objects={'huber_loss': huber_loss, 'huber_loss_mean': huber_loss_mean})
 
   '''
    ' Make a prediction based on an observation.
