@@ -1,13 +1,13 @@
 import numpy as np
 import tensorflow as tf
 from network_model.network_model import NetworkModel
-from network_model.loss import huber_loss
+from network_model.loss import huber_loss, huber_loss_mean
 
 class AtariNetworkModel(NetworkModel):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, learn_rate=0.00025):
+  def __init__(self, model_file_name, env, learn_rate=1e-4):
     NetworkModel.__init__(self, model_file_name, env, learn_rate)
 
     self.stacked_frames  = 4
@@ -38,7 +38,7 @@ class AtariNetworkModel(NetworkModel):
     self.network.add(tf.keras.layers.Dense(512, activation="relu"))
     self.network.add(tf.keras.layers.Dense(self.act_size, activation="linear"))
 
-    opt = tf.keras.optimizers.RMSprop(lr=self.learn_rate)
+    opt = tf.keras.optimizers.Adam(lr=self.learn_rate, epsilon=1e-4)
 
-    self.network.compile(loss=huber_loss, optimizer=opt)
+    self.network.compile(loss=huber_loss_mean, optimizer=opt)
 
