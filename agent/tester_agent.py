@@ -15,7 +15,7 @@ class TesterAgent(Agent):
     # Epsilon value.  Some random actions are needed because the model
     # may not learn to start games, and hence get stuck.  The Nature
     # paper uses .05, but that seems high to me.
-    self.epsilon = .005
+    self.epsilon = .05
 
   '''
    ' Get the fixed epsilon.
