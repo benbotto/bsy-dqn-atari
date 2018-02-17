@@ -18,7 +18,7 @@ def huber_loss(y_true, y_pred, clip_delta=1.0):
   return tf.where(cond, squared_loss, linear_loss)
 
 '''
- ' Same as above but returns the mean loss.abs.abs.
+ ' Same as above but returns the mean loss.
 '''
 def huber_loss_mean(y_true, y_pred, clip_delta=1.0):
   return tf.keras.backend.mean(huber_loss(y_true, y_pred, clip_delta))
