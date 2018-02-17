@@ -1,6 +1,12 @@
 import numpy as np
+import pdb
 from agent.agent import Agent
 from abc import abstractmethod
+
+# Replay memory returns (ind, prio, transition)
+REP_IND     = 0
+REP_PRIO    = 1
+REP_TRANS   = 2
 
 # Replays are stored in the format (s, a, r, s', done).
 REP_LASTOBS = 0
@@ -109,12 +115,15 @@ class TrainerAgent(Agent):
         self._memory.add((last_obs, action, reward, new_obs, done))
 
         if self._memory.size() >= self.train_start:
+          pdb.set_trace()
           # Random sample from replay memory to train on.
-          batch = self._memory.get_random_sample(self.replay_batch_size)
+          batch       = self._memory.get_random_sample(self.replay_batch_size)
+          indices     = np.take(batch, REP_IND,   1)
+          transitions = np.take(batch, REP_TRANS, 1)
 
           # Array of old and new observations.
-          last_observations = np.array([rep[REP_LASTOBS] for rep in batch])
-          new_observations  = np.array([rep[REP_NEWOBS] for rep in batch])
+          last_observations = np.array([rep[REP_LASTOBS] for rep in transitions])
+          new_observations  = np.array([rep[REP_NEWOBS] for rep in transitions])
 
           # Predictions from the old states, which will be updated to act as the
           # training target. Using Double DQN.
@@ -122,19 +131,29 @@ class TrainerAgent(Agent):
           new_q   = self._target_model.predict(new_observations)
           act_sel = self._model.predict(new_observations)
 
-          for i in range(len(batch)):
+          for i in range(self.replay_batch_size):
             act = np.argmax(act_sel[i])
 
-            if batch[i][REP_DONE]:
+            # This was the predicted reward for the taken action.  It's used
+            # for updating the priority below (priority is based on error).
+            predicted = target[i][transitions[i][REP_ACTION]]
+
+            if transitions[i][REP_DONE]:
               # For terminal states, the target is simply the reward received for
               # the action taken.
-              target[i][batch[i][REP_ACTION]] = batch[i][REP_REWARD]
+              target[i][transitions[i][REP_ACTION]] = transitions[i][REP_REWARD]
             else:
               # Non-terminal targets get the reward and the estimated future
               # reward, discounted.  A discount factor (gamma) of one weighs
               # heavily toward future rewards, whereas a discount factor of
               # zero only considers immediate rewards.
-              target[i][batch[i][REP_ACTION]] = batch[i][REP_REWARD] + self.gamma * new_q[i][act]
+              target[i][transitions[i][REP_ACTION]] = transitions[i][REP_REWARD] + self.gamma * new_q[i][act]
+
+            # The error is the update reward minus the prediction.  If there is
+            # a large error, then the transition was unexpected and thus a lot
+            # can be learned from it.
+            error = np.abs(target[i][transitions[i][REP_ACTION]] - predicted)
+            self._memory.update_error(indices[i], error)
 
           mse = self._model.train_on_batch(last_observations, target)
           #print(mse)
