@@ -22,10 +22,10 @@ assert tree.add(8, 1) == 7
 tree = SumTree(8)
 
 for i in range(8):
-  tree.add(i+1, i)
+  tree.add(i+1, i+1)
 
 for i in range(7, 15):
-  assert tree.get_sum(i) == i - 7
+  assert tree.get_sum(i) == i - 7 + 1
 tree.add(8, 8)
 assert tree.get_sum(7) == 8
 
@@ -97,4 +97,86 @@ for i in range(10000):
 for i in range(8):
   # There could be some failures here but it would be rare.
   assert abs(counts[i] / 10000 - (i+1) / 36.0) < .015
+
+# Random sample tests (seeded for reproducibility).
+np.random.seed(0)
+tree = SumTree(8)
+
+for i in range(8):
+  tree.add(i, i+1)
+
+sample = tree.get_random_sample(3)
+assert sample[0][0] == 12
+assert sample[1][0] == 13
+assert sample[2][0] == 13
+
+sample = tree.get_random_sample(3)
+assert sample[0][0] == 12
+assert sample[1][0] == 12
+assert sample[2][0] == 13
+
+sample = tree.get_random_sample(3)
+assert sample[0][0] == 12
+assert sample[1][0] == 14
+assert sample[2][0] == 14
+
+# Random sample with infinite priorities.
+np.random.seed(0)
+tree = SumTree(8)
+
+for i in range(4):
+  tree.add(i, 0)
+for i in range(4):
+  tree.add(i, i + 1)
+
+sample = tree.get_random_sample(5)
+assert sample[0][0] == 9
+assert sample[1][0] == 10
+assert sample[2][0] == 8
+assert sample[3][0] == 7
+assert sample[4][0] == 14
+
+# Updates unprioritized items.
+np.random.seed(0)
+tree = SumTree(8)
+
+for i in range(4):
+  tree.add(i, 0)
+for i in range(4):
+  tree.add(i, i + 1)
+
+tree.update(8, 42)
+
+sample = tree.get_random_sample(5)
+assert sample[0][0] == 10
+assert sample[1][0] == 9
+assert sample[2][0] == 7
+assert sample[3][0] == 8
+assert sample[4][0] == 8
+
+tree.update(7, 41)
+sample = tree.get_random_sample(5)
+assert sample[0][0] == 9
+assert sample[1][0] == 10
+assert sample[2][0] == 8
+assert sample[3][0] == 8
+assert sample[4][0] == 7
+
+tree.update(9, 40)
+sample = tree.get_random_sample(5)
+assert sample[0][0] == 10
+assert sample[1][0] == 7
+assert sample[2][0] == 7
+assert sample[3][0] == 7
+assert sample[4][0] == 8
+
+tree.update(10, 39)
+sample = tree.get_random_sample(5)
+assert sample[0][0] == 10
+assert sample[1][0] == 8
+assert sample[2][0] == 8
+assert sample[3][0] == 10
+assert sample[4][0] == 8
+
+tree.update(10, 39)
 
