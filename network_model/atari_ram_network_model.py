@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from network_model.network_model import NetworkModel
-from network_model.loss import huber_loss
+from network_model.loss import huber_loss, huber_loss_mean
 
 class AtariRamNetworkModel(NetworkModel):
   '''
@@ -26,5 +26,5 @@ class AtariRamNetworkModel(NetworkModel):
 
     opt = tf.keras.optimizers.Adam(lr=self.learn_rate, epsilon=1e-4)
 
-    self.network.compile(loss=huber_loss, optimizer=opt)
+    self.network.compile(loss=huber_loss_mean, optimizer=opt)
 
