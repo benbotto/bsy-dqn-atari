@@ -39,27 +39,12 @@ class ReplayMemory:
    ' Get a random sample of memory.
   '''
   def get_random_sample(self, sample_size):
-    # Sample from memory without replacement (unique).
-    return np.random.choice(self._memory, sample_size, False)
+    # Sample indices without replacement (unique).
+    indices = np.random.choice(self.size(), sample_size, False)
+    sample  = np.zeros(sample_size, dtype=object)
 
-  '''
-   ' Remove an item from memory.
-  '''
-  def delete(self, ind):
-    item         = self.get(ind)
-    self._size  -= 1
+    for i in range(sample_size):
+      sample[i] = self._memory[indices[i]]
 
-    # Move the write pointer back one element (it's circular).
-    self._write -= 1
-
-    if self._write == -1:
-      self._write = self._capacity - 1
-
-    # Replace the item with the last thing in the list.
-    self._memory[ind] = self._memory[self._write]
-
-    # This isn't strictly needed, it's just housekeeping.
-    self._memory[self._write] = 0
-
-    return item
+    return sample
 
