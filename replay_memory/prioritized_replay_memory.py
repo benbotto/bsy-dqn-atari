@@ -7,8 +7,8 @@ class PrioritizedReplayMemory(SumTree):
   '''
    ' Init.
   '''
-  def __init__(self, capacity, epsilon = .01, alpha = .6):
-    super().__init__(capacity)
+  def __init__(self, capacity, pergatory_capacity, epsilon = .01, alpha = .6):
+    super().__init__(capacity, pergatory_capacity)
 
     self.epsilon = epsilon
     self.alpha   = alpha
