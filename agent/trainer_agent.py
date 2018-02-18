@@ -1,5 +1,4 @@
 import numpy as np
-import pdb
 from agent.agent import Agent
 from abc import abstractmethod
 
@@ -115,7 +114,6 @@ class TrainerAgent(Agent):
         self._memory.add((last_obs, action, reward, new_obs, done))
 
         if self._memory.size() >= self.train_start:
-          pdb.set_trace()
           # Random sample from replay memory to train on.
           batch       = self._memory.get_random_sample(self.replay_batch_size)
           indices     = np.take(batch, REP_IND,   1)
