@@ -8,7 +8,7 @@ class AtariTesterAgent(TesterAgent):
    ' Init.
   '''
   def __init__(self, env, model):
-    TesterAgent.__init__(self, env, model)
+    super().__init__(env, model)
 
     # Store and stacks the frames for easy access.  The DQN paper use the last
     # four frames as an observation.

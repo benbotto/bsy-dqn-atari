@@ -9,7 +9,7 @@ class AtariTrainerAgent(TrainerAgent):
    ' Init.
   '''
   def __init__(self, env, model, target_model, memory):
-    TrainerAgent.__init__(self, env, model, target_model, memory)
+    super().__init__(env, model, target_model, memory)
 
     # Store and stacks the frames for easy access.  The DQN paper use the last
     # four frames as an observation.

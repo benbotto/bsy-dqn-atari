@@ -6,7 +6,7 @@ class TesterAgent(Agent):
    ' Init.
   '''
   def __init__(self, env, model):
-    Agent.__init__(self, env, model)
+    super().__init__(env, model)
 
     ##
     # Tunable parameters.

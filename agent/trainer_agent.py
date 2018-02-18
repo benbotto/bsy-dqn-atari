@@ -19,7 +19,7 @@ class TrainerAgent(Agent):
    ' Init.
   '''
   def __init__(self, env, model, target_model, memory):
-    Agent.__init__(self, env, model)
+    super().__init__(env, model)
 
     self._target_model = target_model
     self._memory       = memory

@@ -8,7 +8,7 @@ class AtariRamNetworkModel(NetworkModel):
    ' Init.
   '''
   def __init__(self, model_file_name, env, learn_rate=1e-4):
-    NetworkModel.__init__(self, model_file_name, env, learn_rate)
+    super().__init__(model_file_name, env, learn_rate)
 
   '''
    ' Build the model.

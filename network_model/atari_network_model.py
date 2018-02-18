@@ -8,7 +8,7 @@ class AtariNetworkModel(NetworkModel):
    ' Init.
   '''
   def __init__(self, model_file_name, env, learn_rate=1e-4):
-    NetworkModel.__init__(self, model_file_name, env, learn_rate)
+    super().__init__(model_file_name, env, learn_rate)
 
     self.stacked_frames  = 4
     self.frame_width     = int(self.obs_shape[0] / 2)

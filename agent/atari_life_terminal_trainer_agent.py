@@ -6,7 +6,7 @@ class AtariLifeTerminalTrainerAgent(AtariTrainerAgent):
    ' Init.
   '''
   def __init__(self, env, model, target_model, memory):
-    AtariTrainerAgent.__init__(self, env, model, target_model, memory)
+    super().__init__(env, model, target_model, memory)
 
     self._lives = 0
 
@@ -21,7 +21,7 @@ class AtariLifeTerminalTrainerAgent(AtariTrainerAgent):
    ' Step the environment.
   '''
   def step(self, action):
-    new_obs, reward, done, info = super(AtariTrainerAgent, self).step(action)
+    new_obs, reward, done, info = super().step(action)
 
     # For games that have a life counter, losing a life is considered terminal.
     # This is how the Nature paper on DQN trained.

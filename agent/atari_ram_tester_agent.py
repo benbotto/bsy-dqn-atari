@@ -6,5 +6,5 @@ class AtariRamTesterAgent(TesterAgent):
    ' Init.
   '''
   def __init__(self, env, model):
-    TesterAgent.__init__(self, env, model)
+    super().__init__(env, model)
 
