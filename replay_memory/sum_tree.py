@@ -6,12 +6,15 @@ import math
  ' Inspired by https://jaromiru.com/2016/11/07/lets-make-a-dqn-double-learning-and-prioritized-experience-replay/
  ' (Maybe a better name would be SegmentTree, but I followed the naming
  ' from the referenced article.)
+ ' This data structure differes, however, in that new items are added to a
+ ' holding area ("pergatory") and treated as if they have infinite priority.
+ ' These items are sampled first.
 '''
 class SumTree:
   '''
    ' Init.
   '''
-  def __init__(self, capacity):
+  def __init__(self, capacity, pergatory_capacity):
     # A binary tree is used, where all the items are stored as leaves.  The
     # capacity is required to be a power of 2.
     assert math.log(capacity, 2).is_integer()
@@ -25,14 +28,16 @@ class SumTree:
     self._memory    = np.zeros(self._capacity, dtype=object)
     self._sum_tree  = np.zeros(self._tree_size)
 
-    # New, unprioritized items (sampled first).
-    self._unprio    = []
-
     # Circular write index.
     self._write = 0
 
     # Number of leaves currently in the tree.
     self._size = 0
+
+    # New, unprioritized items (sampled first).
+    self._pergatory_capacity = pergatory_capacity;
+    self._pergatory          = np.zeros(self._pergatory_capacity, dtype=int)
+    self._pergatory_size     = 0
 
   '''
    ' Get the number of items in memory.
@@ -55,14 +60,20 @@ class SumTree:
     sample = np.zeros((sample_size, 3), dtype=object)
 
     # Unprioritized items first.
-    u_sample_size = min(sample_size, len(self._unprio))
+    u_sample_size = min(sample_size, self._pergatory_size)
 
     if u_sample_size != 0:
-      u_sample_inds = np.random.choice(self._unprio, u_sample_size, False)
+      # Sampled from pergatory without replacement.  pergatory contains
+      # indices into the tree, and perg_inds is a random sample of indices
+      # into pergatory.
+      perg_inds = np.random.choice(self._pergatory_size, u_sample_size, False)
+
+      # These are sum tree indices.
+      u_sample_inds = [self._pergatory[i] for i in perg_inds]
 
       for i in range(u_sample_size):
-        ind  = u_sample_inds[i]
-        item = self._memory[ind - self._capacity + 1]
+        ind       = u_sample_inds[i]
+        item      = self._memory[ind - self._capacity + 1]
         sample[i] = (ind, 0, item)
 
     # Prioritized samples next.
@@ -109,6 +120,8 @@ class SumTree:
    ' item and is sampled first (with infinite priority).
   '''
   def add(self, item, prio = 0):
+    assert self._pergatory_size < self._pergatory_capacity
+
     # Circular array -- capacity is never exceeded.
     if self._write == self._capacity:
       self._write = 0
@@ -125,7 +138,8 @@ class SumTree:
 
     # Keep track of items with infinite priority.
     if prio == 0:
-      self._unprio.append(tree_ind)
+      self._pergatory[self._pergatory_size] = tree_ind
+      self._pergatory_size += 1
 
     self._write += 1
 
@@ -145,9 +159,13 @@ class SumTree:
     self._update_sums(ind, delta)
 
     # If the item was previously unprioritized, prioritize it.
-    for i in range(len(self._unprio)):
-      if self._unprio[i] == ind:
-        self._unprio.pop(i)
+    for i in range(self._pergatory_size):
+      if self._pergatory[i] == ind:
+        # Rather than deleting the item, the last item in pergatory simply
+        # replaces the newly-prioritized item.  This was done for efficiency.
+        self._pergatory_size -= 1
+        self._pergatory[i] = self._pergatory[self._pergatory_size]
+        self._pergatory[self._pergatory_size] = 0
         break
 
   '''

@@ -13,13 +13,13 @@ from sum_tree import SumTree
 #     1   2  3   4 5   6 7   8
 
 # Add tests.
-tree = SumTree(8)
+tree = SumTree(8, 8)
 for i in range(8):
   assert tree.add(i, 1) == i + 7
 assert tree.add(8, 1) == 7
 
 # Get tests.
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 for i in range(8):
   tree.add(i+1, i+1)
@@ -30,7 +30,7 @@ tree.add(8, 8)
 assert tree.get_sum(7) == 8
 
 # Get parent sum tests.
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 for i in range(8):
   tree.add(i, i+1)
@@ -59,7 +59,7 @@ assert tree.get_parent_sum(3) == 19
 assert tree.get_parent_sum(1) == 45
 
 # Child indices.
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 assert tree.get_left_child_index(0)  == 1
 assert tree.get_right_child_index(0) == 2
@@ -69,7 +69,7 @@ assert tree.get_left_child_index(6)  == 13
 assert tree.get_right_child_index(6) == 14
 
 # Update.
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 for i in range(8):
   tree.add(i, i+1)
@@ -81,7 +81,7 @@ assert tree.get_sum(1) == 19
 assert tree.get_sum(0) == 45
 
 # Get.
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 for i in range(8):
   tree.add(i, i+1)
@@ -100,7 +100,7 @@ for i in range(8):
 
 # Random sample tests (seeded for reproducibility).
 np.random.seed(0)
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 for i in range(8):
   tree.add(i, i+1)
@@ -122,7 +122,7 @@ assert sample[2][0] == 14
 
 # Random sample with infinite priorities.
 np.random.seed(0)
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 for i in range(4):
   tree.add(i, 0)
@@ -138,7 +138,7 @@ assert sample[4][0] == 14
 
 # Updates unprioritized items.
 np.random.seed(0)
-tree = SumTree(8)
+tree = SumTree(8, 8)
 
 for i in range(4):
   tree.add(i, 0)
@@ -148,8 +148,8 @@ for i in range(4):
 tree.update(8, 42)
 
 sample = tree.get_random_sample(5)
-assert sample[0][0] == 10
-assert sample[1][0] == 9
+assert sample[0][0] == 9
+assert sample[1][0] == 10
 assert sample[2][0] == 7
 assert sample[3][0] == 8
 assert sample[4][0] == 8
@@ -177,6 +177,4 @@ assert sample[1][0] == 8
 assert sample[2][0] == 8
 assert sample[3][0] == 10
 assert sample[4][0] == 8
-
-tree.update(10, 39)
 
