@@ -15,7 +15,7 @@ class TesterAgent(Agent):
     # Epsilon value.  Some random actions are needed because the model
     # may not learn to start games, and hence get stuck.  The Nature
     # paper uses .05, but that seems high to me.
-    self.epsilon = .05
+    self.epsilon = .005
 
   '''
    ' Get the fixed epsilon.
@@ -26,7 +26,7 @@ class TesterAgent(Agent):
   '''
    ' Run the agent.
   '''
-  def run(self, num_episodes=10):
+  def run(self, num_episodes=100):
     # Number of full games played.
     episode = 0
 
