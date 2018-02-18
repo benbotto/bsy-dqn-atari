@@ -52,7 +52,7 @@ class SumTree:
    ' Get a random sample of memory.
   '''
   def get_random_sample(self, sample_size):
-    sample = np.zeros(sample_size, dtype=object)
+    sample = np.zeros((sample_size, 3), dtype=object)
 
     # Unprioritized items first.
     u_sample_size = min(sample_size, len(self._unprio))
