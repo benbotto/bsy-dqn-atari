@@ -8,7 +8,7 @@ class PrioritizedReplayMemory(SumTree):
    ' Init.
   '''
   def __init__(self, capacity, epsilon = .01, alpha = .6):
-    SumTree.__init__(self, capacity)
+    super().__init__(capacity)
 
     self.epsilon = epsilon
     self.alpha   = alpha
@@ -23,5 +23,5 @@ class PrioritizedReplayMemory(SumTree):
     # items are sampled uniformly.
     prio = (error + self.epsilon) ** self.alpha
 
-    return super(SumTree, self).update(ind, prio)
+    return super().update(ind, prio)
 
