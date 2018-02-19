@@ -154,19 +154,22 @@ class SumTree:
     assert ind >= start and ind < start + self.size()
 
     # The change in priority needs to be propagated up the tree.
-    delta = prio - self.get_sum(ind)
+    old_sum = self.get_sum(ind)
+    delta   = prio - old_sum
+
     self._sum_tree[ind] = prio
     self._update_sums(ind, delta)
 
     # If the item was previously unprioritized, prioritize it.
-    for i in range(self._pergatory_size):
-      if self._pergatory[i] == ind:
-        # Rather than deleting the item, the last item in pergatory simply
-        # replaces the newly-prioritized item.  This was done for efficiency.
-        self._pergatory_size -= 1
-        self._pergatory[i] = self._pergatory[self._pergatory_size]
-        self._pergatory[self._pergatory_size] = 0
-        break
+    if old_sum == 0:
+      for i in range(self._pergatory_size):
+        if self._pergatory[i] == ind:
+          # Rather than deleting the item, the last item in pergatory simply
+          # replaces the newly-prioritized item.  This was done for efficiency.
+          self._pergatory_size -= 1
+          self._pergatory[i] = self._pergatory[self._pergatory_size]
+          self._pergatory[self._pergatory_size] = 0
+          break
 
   '''
    ' Update the sums starting at ind and moving up the tree.
