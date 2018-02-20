@@ -41,16 +41,16 @@ class TrainerAgent(Agent):
     self.target_upd_interval = 10000
 
     # How often to save network weights.
-    self.save_weights_interval = 500000
+    self.save_weights_interval = 100000
 
     # Per the Nature paper, an epsilon-greedy method is used to explore, and
-    # epsilon decays from 1 to .1 over 1 million frames.
+    # epsilon decays from 1 to epsilon_min over EPSILON_DECAY_OVER frames.
     EPSILON_DECAY_OVER       = 1000000
-    self.epsilon_min         = .1
+    self.epsilon_min         = .02
     self.epsilon_decay_rate  = (self.epsilon_min - 1) / EPSILON_DECAY_OVER
 
     # How often to test the target model (in episodes).
-    self.test_interval = 200
+    self.test_interval = 100
 
     # When to start testing.
     self.test_start = 1000000
