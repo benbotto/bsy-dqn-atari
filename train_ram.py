@@ -1,10 +1,14 @@
 import sys
 import gym
 from network_model.atari_ram_network_model import AtariRamNetworkModel
-from replay_memory.replay_memory import ReplayMemory
+from replay_memory.prioritized_replay_memory import PrioritizedReplayMemory
 from agent.atari_ram_trainer_agent import AtariRamTrainerAgent
 
-REP_SIZE = 1000000
+# Number of transitions to store in memory (must be a power of 2).
+REP_SIZE  = 1048576
+
+# Maximum number of unprioritized items in memory.
+PERG_SIZE = 50000
 
 def main(argv):
   if len(argv) != 3:
@@ -24,7 +28,7 @@ def main(argv):
   model.copy_weights_to(target_model)
 
   # The buffer for replay memory.
-  memory = ReplayMemory(REP_SIZE)
+  memory = PrioritizedReplayMemory(REP_SIZE, PERG_SIZE)
 
   # Create the agent and start training.
   agent = AtariRamTrainerAgent(env, model, target_model, memory)
