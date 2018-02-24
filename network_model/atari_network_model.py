@@ -10,9 +10,10 @@ class AtariNetworkModel(NetworkModel):
   def __init__(self, model_file_name, env, learn_rate=5e-5):
     super().__init__(model_file_name, env, learn_rate)
 
+    # From the Nature paper, 4, 84x84 grayscale images are used.
     self.stacked_frames  = 4
-    self.frame_width     = int(self.obs_shape[0] / 2)
-    self.frame_height    = int(self.obs_shape[1] / 2)
+    self.frame_width     = 84
+    self.frame_height    = 84
 
   '''
    ' Get the input shape.
