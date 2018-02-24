@@ -31,6 +31,13 @@ class TrainerAgent(Agent):
     # When to start training.
     self.train_start = 50000
 
+    # Training interval, in frames.  E.g. when to train on a batch of transitions.
+    self.train_interval = 4
+
+    # Generally memory samples are prioritized, but occasionally it's purely
+    # random to help improve stability.
+    self.random_sample_interval = 80
+
     # The size of the replay batch to train on.
     self.replay_batch_size = 32
 
@@ -57,6 +64,12 @@ class TrainerAgent(Agent):
 
     # How many episodes to test for.
     self.test_episodes = 2
+
+    # How often to use the target model.
+    self.use_target_interval = 10000
+
+    # How long to user the target model for.
+    self.use_target_for = 1000
 
   '''
    ' Decaying epsilon based on total timesteps.
@@ -93,12 +106,20 @@ class TrainerAgent(Agent):
         # predict the action using the network model.
         epsilon = self.get_epsilon(total_t)
 
-        if self._memory.size() < self.train_start or np.random.rand() < epsilon:
+        # Sometimes the target model is used with no exploration so that
+        # end-game experience is gained.
+        use_target = total_t % self.use_target_interval < self.use_target_for
+
+        if self._memory.size() < self.train_start or not use_target and np.random.rand() < epsilon:
           action = self._env.action_space.sample()
         else:
           # Run the inputs through the network to predict an action and get the Q
           # table (the estimated rewards for the current state).
-          Q = self._model.predict(np.array([last_obs]))
+          if use_target:
+            Q = self._target_model.predict(np.array([last_obs]))
+          else:
+            Q = self._model.predict(np.array([last_obs]))
+
           print('Q: {}'.format(Q))
 
           # Action is the index of the element with the highest predicted reward.
@@ -113,9 +134,13 @@ class TrainerAgent(Agent):
         # Store the replay memory in (s, a, r, s', t) form.
         self._memory.add((last_obs, action, reward, new_obs, done))
 
-        if self._memory.size() >= self.train_start:
+        if self._memory.size() >= self.train_start and total_t % self.train_interval == 0:
+          # Usually prioritized experience replay is used, but not always
+          # (this improves stability).
+          use_prio = total_t % self.random_sample_interval != 0
+
           # Random sample from replay memory to train on.
-          batch       = self._memory.get_random_sample(self.replay_batch_size)
+          batch       = self._memory.get_random_sample(self.replay_batch_size, use_prio)
           indices     = np.take(batch, REP_IND,   1)
           transitions = np.take(batch, REP_TRANS, 1)
 
@@ -149,12 +174,15 @@ class TrainerAgent(Agent):
 
             # The error is the update reward minus the prediction.  If there is
             # a large error, then the transition was unexpected and thus a lot
-            # can be learned from it.
+            # can be learned from it.  Errors, however, are limitted to 1 so
+            # outliers don't drastically skew the sampling.
             error = np.abs(target[i][transitions[i][REP_ACTION]] - predicted)
+            #print('Error on index {}: {}'.format(indices[i], error))
+            error = min(error, 1.0)
             self._memory.update_error(indices[i], error)
 
-          mse = self._model.train_on_batch(last_observations, target)
-          #print(mse)
+          loss = self._model.train_on_batch(last_observations, target)
+          #print('Loss: {}'.format(loss))
 
           # Periodically update the target network.
           if total_t % self.target_upd_interval == 0:
