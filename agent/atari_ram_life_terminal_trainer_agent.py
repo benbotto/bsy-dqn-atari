@@ -15,7 +15,7 @@ class AtariRamLifeTerminalTrainerAgent(AtariRamTrainerAgent):
   '''
   def reset(self):
     self._lives = 0
-    return self._env.reset()
+    return super().reset()
 
   '''
    ' Step the environment.
