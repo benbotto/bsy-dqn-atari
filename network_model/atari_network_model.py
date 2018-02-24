@@ -7,7 +7,7 @@ class AtariNetworkModel(NetworkModel):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, learn_rate=1e-4):
+  def __init__(self, model_file_name, env, learn_rate=5e-5):
     super().__init__(model_file_name, env, learn_rate)
 
     self.stacked_frames  = 4
@@ -38,7 +38,7 @@ class AtariNetworkModel(NetworkModel):
     self.network.add(tf.keras.layers.Dense(512, activation="relu"))
     self.network.add(tf.keras.layers.Dense(self.act_size, activation="linear"))
 
-    opt = tf.keras.optimizers.Adam(lr=self.learn_rate, epsilon=1e-4)
+    opt = tf.keras.optimizers.Adam(lr=self.learn_rate, epsilon=5e-5)
 
     self.network.compile(loss=huber_loss_mean, optimizer=opt)
 
