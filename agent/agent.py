@@ -93,8 +93,7 @@ class Agent(ABC):
   def step(self, action):
     new_obs, reward, done, info = self._env.step(action)
 
-    # For games that have a life counter, losing a life is considered terminal.
-    # This is how the Nature paper on DQN trained.
+    # The fire key needs to be pressed after a life is lost.
     if 'ale.lives' in info:
       if info['ale.lives'] < self.lives and self._fire_act is not None:
         new_obs, reward, done, info = self._env.step(self._fire_act)
