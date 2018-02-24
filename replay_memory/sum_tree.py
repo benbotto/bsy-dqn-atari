@@ -51,12 +51,18 @@ class SumTree:
   def get(self, sum):
     ind = self._get(0, sum)
 
+    return self.get_sample_at(ind)
+
+  '''
+   ' Get the sample at ind (where in is a sum_tree index).
+  '''
+  def get_sample_at(self, ind):
     return (ind, self._sum_tree[ind], self._memory[ind - self._capacity + 1])
 
   '''
    ' Get a random sample of memory.
   '''
-  def get_random_sample(self, sample_size):
+  def get_random_sample(self, sample_size, priority=True):
     sample = np.zeros((sample_size, 3), dtype=object)
 
     # Unprioritized items first.
@@ -79,8 +85,18 @@ class SumTree:
     # Prioritized samples next.
     p_sample_size = sample_size - u_sample_size
 
-    for i in range(p_sample_size):
-      sample[u_sample_size + i] = self.get(np.random.uniform(0, self.get_total_sum()))
+    if priority:
+      # Sample using priorities.
+      for i in range(p_sample_size):
+        sample[u_sample_size + i] = self.get(np.random.uniform(0, self.get_total_sum()))
+    else:
+      # Sample in a purely random manner.
+      indices = np.random.choice(self.size(), p_sample_size, False)
+      start   = self.get_leaf_start_ind()
+
+      for i in range(p_sample_size):
+        ind = start + indices[i]
+        sample[u_sample_size + i] = self.get_sample_at(start + indices[i])
 
     return sample
 

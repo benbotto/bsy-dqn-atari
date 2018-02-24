@@ -136,6 +136,24 @@ assert sample[2][0] == 8
 assert sample[3][0] == 7
 assert sample[4][0] == 14
 
+# Purely random samples.
+np.random.seed(0)
+tree = SumTree(8, 8)
+
+for i in range(4):
+  tree.add(i+1, i**i)
+for i in range(4):
+  tree.add(i+8, 0)
+
+sample = tree.get_random_sample(6, False)
+# If prioritized 4 would come back frequently since it's priority is so high.
+assert sample[0][0] == 13
+assert sample[1][0] == 14
+assert sample[2][0] == 12
+assert sample[3][0] == 11
+assert sample[4][0] == 9
+assert sample[5][0] == 7
+
 # Updates unprioritized items.
 np.random.seed(0)
 tree = SumTree(8, 8)
