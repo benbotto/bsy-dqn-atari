@@ -37,9 +37,9 @@ class FrameSkipEnv(Wrapper):
 
     # Per the Nature paper, take the maximum pixel values from the last two
     # frames.  This is needed because some games render sprites ever other
-    # frame (like the blinking ghosts in pacman).
-    if len(frame_stack) == 2:
-      obs = np.maximum(frame_stack[0], frame_stack[1])
+    # frame (like the blinking ghosts in pacman).  (The FrameStack class
+    # guarantees that there will be two frames.)
+    obs = np.maximum(frame_stack[0], frame_stack[1])
 
     return obs, total_reward, done, info
 
