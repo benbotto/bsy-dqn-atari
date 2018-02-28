@@ -1,13 +1,13 @@
 import numpy as np
 from agent.agent import Agent
-from abc import abstractmethod
+from agent.tester_agent import TesterAgent
 
 # Replay memory returns (ind, prio, transition)
 REP_IND     = 0
 REP_PRIO    = 1
 REP_TRANS   = 2
 
-# Replays are stored in the format (s, a, r, s', done).
+# Replays are stored in the format (s, a, r, s', d).
 REP_LASTOBS = 0
 REP_ACTION  = 1
 REP_REWARD  = 2
@@ -18,11 +18,12 @@ class TrainerAgent(Agent):
   '''
    ' Init.
   '''
-  def __init__(self, env, model, target_model, memory):
+  def __init__(self, env, model, target_model, memory, tester_agent):
     super().__init__(env, model)
 
     self._target_model = target_model
     self._memory       = memory
+    self.tester_agent  = tester_agent
 
     ##
     # Tunable parameters.
@@ -65,12 +66,6 @@ class TrainerAgent(Agent):
     # How many episodes to test for.
     self.test_episodes = 2
 
-    # How often to use the target model.
-    self.use_target_interval = 10000
-
-    # How long to user the target model for.
-    self.use_target_for = 1000
-
   '''
    ' Decaying epsilon based on total timesteps.
   '''
@@ -80,7 +75,7 @@ class TrainerAgent(Agent):
   '''
    ' Run the agent.
   '''
-  def run(self, num_episodes=100000000):
+  def run(self, num_episodes=50000000):
     # Number of full games played.
     episode = 0
 
@@ -94,7 +89,7 @@ class TrainerAgent(Agent):
       episode_reward = 0
 
       # Reset the environment to get the initial observation.
-      last_obs = self.process_obs(self.reset())
+      last_obs = self._env.reset()
 
       while not done:
         t       += 1
@@ -106,19 +101,12 @@ class TrainerAgent(Agent):
         # predict the action using the network model.
         epsilon = self.get_epsilon(total_t)
 
-        # Sometimes the target model is used with no exploration so that
-        # end-game experience is gained.
-        use_target = total_t % self.use_target_interval < self.use_target_for
-
-        if self._memory.size() < self.train_start or not use_target and np.random.rand() < epsilon:
+        if self._memory.size() < self.train_start or np.random.rand() < epsilon:
           action = self._env.action_space.sample()
         else:
           # Run the inputs through the network to predict an action and get the Q
           # table (the estimated rewards for the current state).
-          if use_target:
-            Q = self._target_model.predict(np.array([last_obs]))
-          else:
-            Q = self._model.predict(np.array([last_obs]))
+          Q = self._model.predict(np.array([last_obs]))
 
           print('Q: {}'.format(Q))
 
@@ -126,17 +114,17 @@ class TrainerAgent(Agent):
           action = np.argmax(Q)
 
         # Apply the action.
-        new_obs, reward, done, _ = self.step(action)
-        new_obs = self.process_obs(new_obs)
+        new_obs, reward, done, _ = self._env.step(action)
         episode_reward += reward
         reward = self.process_reward(reward)
 
-        # Store the replay memory in (s, a, r, s', t) form.
+        # Store the replay memory in (s, a, r, s', d) form.
         self._memory.add((last_obs, action, reward, new_obs, done))
 
         if self._memory.size() >= self.train_start and total_t % self.train_interval == 0:
-          # Usually prioritized experience replay is used, but not always
-          # (this improves stability).
+          # Usually prioritized experience replay is used, but not always.  This
+          # imrpoves stability because low-value transitions aren't expelled.
+          # Other implementations use similar approaches, like decaying beta.
           use_prio = total_t % self.random_sample_interval != 0
 
           # Random sample from replay memory to train on.
@@ -174,11 +162,9 @@ class TrainerAgent(Agent):
 
             # The error is the update reward minus the prediction.  If there is
             # a large error, then the transition was unexpected and thus a lot
-            # can be learned from it.  Errors, however, are limitted to 1 so
-            # outliers don't drastically skew the sampling.
+            # can be learned from it.
             error = np.abs(target[i][transitions[i][REP_ACTION]] - predicted)
             #print('Error on index {}: {}'.format(indices[i], error))
-            error = min(error, 1.0)
             self._memory.update_error(indices[i], error)
 
           loss = self._model.train_on_batch(last_observations, target)
@@ -207,7 +193,6 @@ class TrainerAgent(Agent):
   '''
    ' Test the model.
   '''
-  @abstractmethod
   def test(self):
-    pass
+    self.tester_agent.run(self.test_episodes)
 
