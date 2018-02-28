@@ -45,3 +45,9 @@ class NoOpStartEnv(Wrapper):
 
     return obs
 
+  '''
+   ' Step the environment.
+  '''
+  def step(self, action):
+    return self.env.step(action)
+
