@@ -1,3 +1,4 @@
+import numpy as np
 from gym import Wrapper, spaces
 from util.image_utils import preprocess_frame
 
@@ -12,7 +13,26 @@ class PreprocessedFrameEnv(Wrapper):
     super().__init__(env)
 
     # Redefine the observation space using the frame width and height.
-    self.observation_space = spaces.Box(low=0, high=255, shape=(84, 84))
+    self.observation_space = spaces.Box(
+      low=0,
+      high=255,
+      shape=(frame_width, frame_height),
+      dtype=np.uint8)
+
+  '''
+   ' Helper function to preprocess a frame.
+  '''
+  def preprocess_frame(self, obs):
+    return preprocess_frame(
+      obs,
+      self.observation_space.shape[0],
+      self.observation_space.shape[1])
+
+  '''
+   ' Reset the environment and preprocess the frame..
+  '''
+  def reset(self):
+    return self.preprocess_frame(self.env.reset())
 
   '''
    ' Step the environment and process the frame by converting it to grayscale
@@ -21,7 +41,7 @@ class PreprocessedFrameEnv(Wrapper):
   def step(self, action):
     obs, reward, done, info = self.env.step(action)
 
-    obs = preprocess_frame(obs, self.observation_space.shape[0], self.observation_space.shape[1])
+    obs = self.preprocess_frame(obs)
 
     return obs, reward, done, info
 
