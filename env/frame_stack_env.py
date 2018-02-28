@@ -1,3 +1,4 @@
+import numpy as np
 from gym import Wrapper, spaces
 from util.frame_buffer import FrameBuffer
 
@@ -20,8 +21,18 @@ class FrameStackEnv(Wrapper):
     # Redefine the observation space to have stacked_frames frames.
     env_obs_space = self.env.observation_space
 
-    self.observation_space = spaces.Box(0, 255, 
-      (self.stacked_frames, env_obs_space.shape[0], env_obs_space.shape[1]))
+    self.observation_space = spaces.Box(
+      low=0,
+      high=255,
+      shape=(self.stacked_frames, env_obs_space.shape[0], env_obs_space.shape[1]),
+      dtype=np.uint8)
+
+  '''
+   ' Reset the environment.
+  '''
+  def reset(self):
+    # Adding the frame returns the most recent for frames.
+    return self._frames.add_frame(self.env.reset())
 
   '''
    ' Step the environment and stack the observation.  This way the agent can
@@ -29,9 +40,6 @@ class FrameStackEnv(Wrapper):
   '''
   def step(self, action):
     obs, reward, done, info = self.env.step(action)
-
-    # Adding the frame returns the most recent for frames.
     obs = self._frames.add_frame(obs)
-
     return obs, reward, done, info
 
