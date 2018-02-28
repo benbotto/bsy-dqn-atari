@@ -12,10 +12,9 @@ class TesterAgent(Agent):
     # Tunable parameters.
     ##
 
-    # Epsilon value.  Some random actions are needed because the model
-    # may not learn to start games, and hence get stuck.  The Nature
-    # paper uses .05, but that seems high to me.
-    self.epsilon = 0
+    # Epsilon value is static (the Nature paper uses .05).  Set this value to 0
+    # to test the model without random actions.
+    self.epsilon = 0.01
 
   '''
    ' Get the fixed epsilon.
@@ -40,7 +39,7 @@ class TesterAgent(Agent):
       episode_reward = 0
 
       # Reset the environment to get the initial observation.
-      last_obs = self.process_obs(self.reset())
+      last_obs = self._env.reset()
 
       while not done:
         t       += 1
@@ -63,8 +62,7 @@ class TesterAgent(Agent):
           action = np.argmax(Q)
 
         # Apply the action.
-        new_obs, reward, done, _ = self.step(action)
-        new_obs = self.process_obs(new_obs)
+        new_obs, reward, done, _ = self._env.step(action)
         episode_reward += reward
 
         last_obs = new_obs
