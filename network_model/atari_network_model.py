@@ -10,17 +10,6 @@ class AtariNetworkModel(NetworkModel):
   def __init__(self, model_file_name, env, learn_rate=5e-5):
     super().__init__(model_file_name, env, learn_rate)
 
-    # From the Nature paper, 4, 84x84 grayscale images are used.
-    self.stacked_frames  = 4
-    self.frame_width     = 84
-    self.frame_height    = 84
-
-  '''
-   ' Get the input shape.
-  '''
-  def get_input_shape(self):
-    return (self.stacked_frames, self.frame_width, self.frame_height)
-
   '''
    ' Build the model.
   '''
@@ -39,7 +28,7 @@ class AtariNetworkModel(NetworkModel):
     self.network.add(tf.keras.layers.Dense(512, activation="relu"))
     self.network.add(tf.keras.layers.Dense(self.act_size, activation="linear"))
 
-    opt = tf.keras.optimizers.Adam(lr=self.learn_rate, epsilon=5e-5)
+    opt = tf.keras.optimizers.Adam(lr=self.learn_rate)
 
     self.network.compile(loss=huber_loss_mean, optimizer=opt)
 
