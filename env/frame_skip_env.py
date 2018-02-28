@@ -15,6 +15,12 @@ class FrameSkipEnv(Wrapper):
     self.frame_skip = frame_skip
 
   '''
+   ' Reset the environment.
+  '''
+  def reset(self):
+    return self.env.reset()
+
+  '''
    ' Step the environment.  The action is repeated frame_skip times, and the
    ' total reward is returned.  The maximum pixel value of the last two
    ' frames makes up the returned observation.
