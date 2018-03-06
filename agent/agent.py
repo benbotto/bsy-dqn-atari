@@ -58,6 +58,13 @@ class Agent(ABC):
     return sum(self._reward_que) / len(self._reward_que)
 
   '''
+   ' Reset the reward tracking.
+  '''
+  def reset_rewards(self):
+    self._reward_que.clear()
+    self._max_reward = -1000000
+
+  '''
    ' Run the agent.
   '''
   @abstractmethod
