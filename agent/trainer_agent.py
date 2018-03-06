@@ -56,10 +56,16 @@ class TrainerAgent(Agent):
     self.save_weights_interval = 100000
 
     # Per the Nature paper, an epsilon-greedy method is used to explore, and
-    # epsilon decays from 1 to epsilon_min over EPSILON_DECAY_OVER frames.
-    EPSILON_DECAY_OVER       = 1000000
-    self.epsilon_min         = .02
-    self.epsilon_decay_rate  = (self.epsilon_min - 1) / EPSILON_DECAY_OVER
+    # epsilon decays from 1 to epsilon_min over epsilon_decay_over frames.  The
+    # OpenAI baselines, however, decrease epsilon further over the next
+    # epsilon_decay_over2 framse.
+    self._epsilon_decay_over  = 1000000
+    self.epsilon_min          = .1
+    self.epsilon_decay_rate   = (self.epsilon_min - 1) / self._epsilon_decay_over
+
+    self._epsilon_decay_over2 = 24000000
+    self.epsilon_min2         = .01
+    self.epsilon_decay_rate2  = (self.epsilon_min2 - self.epsilon_min) / self._epsilon_decay_over2
 
     # How often to test the target model (in episodes).
     self.test_interval = 100
@@ -74,7 +80,10 @@ class TrainerAgent(Agent):
    ' Decaying epsilon based on total timesteps.
   '''
   def get_epsilon(self, total_t):
-    return max(self.epsilon_decay_rate * total_t + 1, self.epsilon_min)
+    if total_t < self._epsilon_decay_over:
+      return max(self.epsilon_decay_rate * total_t + 1, self.epsilon_min)
+    else:
+      return max(self.epsilon_decay_rate2 * (total_t - self._epsilon_decay_over) + self.epsilon_min, self.epsilon_min2)
 
   '''
    ' Run the agent.
@@ -111,8 +120,7 @@ class TrainerAgent(Agent):
           # Run the inputs through the network to predict an action and get the Q
           # table (the estimated rewards for the current state).
           Q = self._model.predict(np.array([last_obs]))
-
-          print('Q: {}'.format(Q))
+          #print('Q: {}'.format(Q))
 
           # Action is the index of the element with the highest predicted reward.
           action = np.argmax(Q)
