@@ -34,8 +34,8 @@ def main(argv):
   model_file_name = argv[2]
 
   # Build the network model for the environment.
-  model        = AtariRamNetworkModel(model_file_name, train_env).create_network()
-  target_model = AtariRamNetworkModel(model_file_name, train_env).create_network()
+  model        = AtariRamNetworkModel(model_file_name, train_env, 'model').create_network()
+  target_model = AtariRamNetworkModel(model_file_name, train_env, 'target').create_network()
 
   model.copy_weights_to(target_model)
 

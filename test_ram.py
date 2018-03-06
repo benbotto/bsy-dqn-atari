@@ -19,7 +19,7 @@ def main(argv):
   model_file_name = argv[2]
 
   # Load the model.
-  model = AtariRamNetworkModel(model_file_name, env).create_network()
+  model = AtariRamNetworkModel(model_file_name, env, 'model').create_network()
 
   # Create the agent and test the model.
   agent = TesterAgent(env, model)

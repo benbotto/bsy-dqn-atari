@@ -45,8 +45,8 @@ def main(argv):
   # Build the network model for the environment.  The inputs are images, which
   # are preprocessed (grayscaled and scaled down by a factor of two), then
   # stacked so that the agent can determine things like velocity.
-  model        = AtariNetworkModel(model_file_name, train_env).create_network()
-  target_model = AtariNetworkModel(model_file_name, train_env).create_network()
+  model        = AtariNetworkModel(model_file_name, train_env, 'model').create_network()
+  target_model = AtariNetworkModel(model_file_name, train_env, 'target').create_network()
 
   model.copy_weights_to(target_model)
 

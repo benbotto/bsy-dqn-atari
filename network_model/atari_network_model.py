@@ -7,8 +7,8 @@ class AtariNetworkModel(NetworkModel):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, learn_rate=5e-5):
-    super().__init__(model_file_name, env, learn_rate)
+  def __init__(self, model_file_name, env, name, learn_rate=5e-5):
+    super().__init__(model_file_name, env, name, learn_rate)
 
   '''
    ' Build the model.
