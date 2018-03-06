@@ -25,6 +25,10 @@ class TrainerAgent(Agent):
     self._memory       = memory
     self.tester_agent  = tester_agent
 
+    # Keeps track of the best rewards during testing.
+    self._best_max_test_reward = -1000000
+    self._best_avg_test_reward = -1000000
+
     ##
     # Tunable parameters.
     ##
@@ -64,7 +68,7 @@ class TrainerAgent(Agent):
     self.test_start = 1000000
 
     # How many episodes to test for.
-    self.test_episodes = 2
+    self.test_episodes = 20
 
   '''
    ' Decaying epsilon based on total timesteps.
@@ -75,14 +79,14 @@ class TrainerAgent(Agent):
   '''
    ' Run the agent.
   '''
-  def run(self, num_episodes=50000000):
+  def run(self, num_frames=50000000):
     # Number of full games played.
     episode = 0
 
     # Total timesteps.
     total_t = 0
 
-    while episode < num_episodes:
+    while total_t < num_frames:
       episode       += 1
       done           = False
       t              = 0 # t is the timestep.
@@ -189,10 +193,25 @@ class TrainerAgent(Agent):
       if total_t >= self.test_start and episode % self.test_interval == 0:
         print('Testing model.')
         self.test()
+        print('Max Test Reward: {} Max Test Average: {}'
+          .format(self._best_max_test_reward, self._best_avg_test_reward))
 
   '''
    ' Test the model.
   '''
   def test(self):
+    self.tester_agent.reset_rewards()
     self.tester_agent.run(self.test_episodes)
+
+    if self.tester_agent.get_max_reward() > self._best_max_test_reward:
+      self._best_max_test_reward = self.tester_agent.get_max_reward()
+
+      # Save the weights.
+      model_file_name = self._target_model.model_file_name.replace('.h5', '.max.h5')
+      self._target_model.save(model_file_name)
+
+    if self.tester_agent.get_average_reward() > self._best_avg_test_reward:
+      self._best_avg_test_reward = self.tester_agent.get_average_reward()
+      model_file_name = self._target_model.model_file_name.replace('.h5', '.avg.h5')
+      self._target_model.save(model_file_name)
 
