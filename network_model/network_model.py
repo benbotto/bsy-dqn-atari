@@ -3,26 +3,30 @@ import os.path
 import tensorflow as tf
 from abc import ABC, abstractmethod
 from network_model.loss import huber_loss, huber_loss_mean
+from copy import deepcopy
 
 class NetworkModel(ABC):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, learn_rate=5e-5):
+  def __init__(self, model_file_name, env, name, learn_rate=5e-5):
     self.obs_shape       = env.observation_space.shape
     self.act_size        = env.action_space.n
-    self.learn_rate      = learn_rate
     self.model_file_name = model_file_name
+    self.name            = name
+    self.learn_rate      = learn_rate
 
   '''
    ' Create the underlying network.
   '''
   def create_network(self):
-    # Load the network from a save file.
-    if os.path.isfile(self.model_file_name):
-      self.load()
-    else:
-      self.build()
+    with tf.variable_scope(self.name):
+      with tf.name_scope(self.name):
+        # Load the network from a save file.
+        if os.path.isfile(self.model_file_name):
+          self.load()
+        else:
+          self.build()
 
     return self
 
@@ -44,14 +48,19 @@ class NetworkModel(ABC):
   '''
   def copy_weights_to(self, target):
     print('Copying weights to target.')
-    target.network.set_weights(self.network.get_weights())
+    weights = deepcopy(self.network.get_weights())
+    target.network.set_weights(weights)
 
   '''
-   ' Save the weights to a file.
+   ' Save the weights to a file.  The default file name, which is passed in to
+   ' the ctor, can be overridden.
   '''
-  def save(self):
-    print('Saving model weights to {}.'.format(self.model_file_name))
-    self.network.save(self.model_file_name)
+  def save(self, model_file_name=None):
+    if model_file_name is None:
+      print('Saving model weights to {}.'.format(self.model_file_name))
+    else:
+      print('Saving model weights to {}.'.format(model_file_name))
+      self.network.save(model_file_name)
 
   '''
    ' Load the weights from a file.
