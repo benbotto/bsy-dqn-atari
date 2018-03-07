@@ -108,7 +108,7 @@ class TrainerAgent(Agent):
         t       += 1
         total_t += 1
 
-        self._env.render()
+        #self._env.render()
 
         # Choose an action randomly sometimes for exploration, but other times
         # predict the action using the network model.
