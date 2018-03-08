@@ -21,12 +21,13 @@ class NetworkModel(ABC):
    ' Create the underlying network.
   '''
   def create_network(self):
-    with tf.name_scope(self.name):
-      # Load the network from a save file.
-      if os.path.isfile(self.model_file_name):
-        self.load()
-      else:
-        self.build()
+    with tf.variable_scope(self.name):
+      with tf.name_scope(self.name):
+        # Load the network from a save file.
+        if os.path.isfile(self.model_file_name):
+          self.load()
+        else:
+          self.build()
 
     return self
 
