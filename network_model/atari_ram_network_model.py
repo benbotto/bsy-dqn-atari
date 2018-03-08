@@ -7,8 +7,8 @@ class AtariRamNetworkModel(NetworkModel):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, name, learn_rate=5e-5):
-    super().__init__(model_file_name, env, name, learn_rate)
+  def __init__(self, model_file_name, env, name, learn_rate=1e-4, decay=9e-7):
+    super().__init__(model_file_name, env, name, learn_rate, decay)
 
   '''
    ' Build the model.
@@ -24,7 +24,7 @@ class AtariRamNetworkModel(NetworkModel):
     self.network.add(tf.keras.layers.Dense(128, activation="relu"))
     self.network.add(tf.keras.layers.Dense(self.act_size, activation="linear"))
 
-    opt = tf.keras.optimizers.Adam(lr=self.learn_rate)
+    opt = tf.keras.optimizers.Adam(lr=self.learn_rate, decay=self.decay)
 
     self.network.compile(loss=huber_loss_mean, optimizer=opt)
 
