@@ -3,7 +3,6 @@ import os.path
 import tensorflow as tf
 from abc import ABC, abstractmethod
 from network_model.loss import huber_loss, huber_loss_mean
-from copy import deepcopy
 
 class NetworkModel(ABC):
   '''
@@ -21,13 +20,12 @@ class NetworkModel(ABC):
    ' Create the underlying network.
   '''
   def create_network(self):
-    with tf.variable_scope(self.name):
-      with tf.name_scope(self.name):
-        # Load the network from a save file.
-        if os.path.isfile(self.model_file_name):
-          self.load()
-        else:
-          self.build()
+    with tf.name_scope(self.name):
+      # Load the network from a save file.
+      if os.path.isfile(self.model_file_name):
+        self.load()
+      else:
+        self.build()
 
     return self
 
@@ -49,8 +47,7 @@ class NetworkModel(ABC):
   '''
   def copy_weights_to(self, target):
     print('Copying weights to target.')
-    weights = deepcopy(self.network.get_weights())
-    target.network.set_weights(weights)
+    target.network.set_weights(self.network.get_weights())
 
   '''
    ' Save the weights to a file.  The default file name, which is passed in to
