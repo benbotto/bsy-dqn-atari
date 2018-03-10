@@ -59,6 +59,7 @@ class NetworkModel(ABC):
   def save(self, model_file_name=None):
     if model_file_name is None:
       print('Saving model weights to {}.'.format(self.model_file_name))
+      self.network.save(self.model_file_name)
     else:
       print('Saving model weights to {}.'.format(model_file_name))
       self.network.save(model_file_name)
