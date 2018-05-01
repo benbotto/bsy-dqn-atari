@@ -11,9 +11,6 @@ from agent.tester_agent import TesterAgent
 # Number of transitions to store in memory (must be a power of 2).
 REP_SIZE  = 1048576
 
-# Maximum number of unprioritized items in memory.
-PERG_SIZE = 50000
-
 def main(argv):
   if len(argv) != 3:
     print('Usage: {} <environment-name> <weights-file>'.format(argv[0]))
