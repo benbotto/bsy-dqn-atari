@@ -2,10 +2,11 @@ import numpy as np
 from agent.agent import Agent
 from agent.tester_agent import TesterAgent
 
-# Replay memory returns (ind, prio, transition)
+# Replay memory returns (ind, prio, is_weights, transition)
 REP_IND     = 0
 REP_PRIO    = 1
-REP_TRANS   = 2
+REP_WEIGHTS = 2
+REP_TRANS   = 3
 
 # Replays are stored in the format (s, a, r, s', d).
 REP_LASTOBS = 0
@@ -39,9 +40,9 @@ class TrainerAgent(Agent):
     # Training interval, in frames.  E.g. when to train on a batch of transitions.
     self.train_interval = 4
 
-    # Generally memory samples are prioritized, but occasionally it's purely
-    # random to help improve stability.
-    self.random_sample_interval = 80
+    # Generally memory samples are prioritized, but prioritization can be
+    # disabled.
+    self.use_prio = True
 
     # The size of the replay batch to train on.
     self.replay_batch_size = 32
@@ -134,15 +135,11 @@ class TrainerAgent(Agent):
         self._memory.add((last_obs, action, reward, new_obs, done))
 
         if self._memory.size() >= self.train_start and total_t % self.train_interval == 0:
-          # Usually prioritized experience replay is used, but not always.  This
-          # imrpoves stability because low-value transitions aren't expelled.
-          # Other implementations use similar approaches, like decaying beta.
-          use_prio = total_t % self.random_sample_interval != 0
-
           # Random sample from replay memory to train on.
-          batch       = self._memory.get_random_sample(self.replay_batch_size, use_prio)
-          indices     = np.take(batch, REP_IND,   1)
-          transitions = np.take(batch, REP_TRANS, 1)
+          batch       = self._memory.get_random_sample(self.replay_batch_size, self.use_prio)
+          indices     = np.take(batch, REP_IND,     1)
+          is_weights  = np.take(batch, REP_WEIGHTS, 1)
+          transitions = np.take(batch, REP_TRANS,   1)
 
           # Array of old and new observations.
           last_observations = np.array([rep[REP_LASTOBS] for rep in transitions])
@@ -177,7 +174,7 @@ class TrainerAgent(Agent):
             # can be learned from it.
             error = np.abs(target[i][transitions[i][REP_ACTION]] - predicted)
             #print('Error on index {}: {}'.format(indices[i], error))
-            self._memory.update_error(indices[i], error)
+            self._memory.update(indices[i], error)
 
           loss = self._model.train_on_batch(last_observations, target)
           #print('Loss: {}'.format(loss))
