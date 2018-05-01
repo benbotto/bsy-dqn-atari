@@ -88,7 +88,7 @@ class TrainerAgent(Agent):
   '''
    ' Run the agent.
   '''
-  def run(self, num_frames=50000000):
+  def run(self, num_frames=200000000):
     # Number of full games played.
     episode = 0
 
