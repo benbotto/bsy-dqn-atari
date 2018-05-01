@@ -37,7 +37,7 @@ def main(argv):
   model.copy_weights_to(target_model)
 
   # The buffer for replay memory.
-  memory = PrioritizedReplayMemory(REP_SIZE, PERG_SIZE)
+  memory = PrioritizedReplayMemory(REP_SIZE)
 
   # Create the agent and start training.
   test_agent  = TesterAgent(test_env, target_model)
