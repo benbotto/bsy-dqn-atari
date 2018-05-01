@@ -8,7 +8,7 @@ class NetworkModel(ABC):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, name, learn_rate=1e-4, decay=9e-7):
+  def __init__(self, model_file_name, env, name, learn_rate=5e-5, decay=0.0):
     self.obs_shape       = env.observation_space.shape
     self.act_size        = env.action_space.n
     self.model_file_name = model_file_name

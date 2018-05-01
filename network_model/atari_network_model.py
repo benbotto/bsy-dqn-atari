@@ -7,7 +7,7 @@ class AtariNetworkModel(NetworkModel):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, name, learn_rate=1e-4, decay=9e-7):
+  def __init__(self, model_file_name, env, name, learn_rate=5e-5, decay=0.0):
     super().__init__(model_file_name, env, name, learn_rate, decay)
 
   '''
