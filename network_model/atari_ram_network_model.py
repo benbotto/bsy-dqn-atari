@@ -15,16 +15,17 @@ class AtariRamNetworkModel(NetworkModel):
   '''
   def build(self):
     print('Building model.')
-    self.network = tf.keras.models.Sequential()
 
-    self.network.add(tf.keras.layers.Lambda(lambda x: x / 255.0, input_shape=self.get_input_shape()))
-    self.network.add(tf.keras.layers.Dense(128, activation="relu"))
-    self.network.add(tf.keras.layers.Dense(128, activation="relu"))
-    self.network.add(tf.keras.layers.Dense(128, activation="relu"))
-    self.network.add(tf.keras.layers.Dense(128, activation="relu"))
-    self.network.add(tf.keras.layers.Dense(self.act_size, activation="linear"))
+    inObs  = tf.keras.layers.Input(shape=self.get_input_shape())
+    norm   = tf.keras.layers.Lambda(lambda x: x / 255.0)(inObs)
+    dense1 = tf.keras.layers.Dense(128, activation="relu")(norm)
+    dense2 = tf.keras.layers.Dense(128, activation="relu")(dense1)
+    dense3 = tf.keras.layers.Dense(128, activation="relu")(dense2)
+    dense4 = tf.keras.layers.Dense(128, activation="relu")(dense3)
+    out    = tf.keras.layers.Dense(self.act_size, activation="linear")(dense4)
 
-    opt = tf.keras.optimizers.Adam(lr=self.learn_rate, decay=self.decay)
+    opt    = tf.keras.optimizers.Adam(lr=self.learn_rate, decay=self.decay)
 
-    self.network.compile(loss=huber_loss_mean, optimizer=opt)
+    self.network = tf.keras.models.Model(inputs=inObs, outputs=out)
+    self.network.compile(optimizer=opt, loss=huber_loss_mean)
 
