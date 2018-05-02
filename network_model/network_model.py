@@ -2,7 +2,6 @@ import numpy as np
 import os.path
 import tensorflow as tf
 from abc import ABC, abstractmethod
-from network_model.loss import huber_loss, huber_loss_mean
 
 class NetworkModel(ABC):
   '''
@@ -17,15 +16,16 @@ class NetworkModel(ABC):
     self.decay           = decay
 
   '''
-   ' Create the underlying network.
+   ' Create the underlying networks.  There are two: one for training and one
+   ' for predicting.
   '''
   def create_network(self):
     with tf.name_scope(self.name):
+      self.build()
+
       # Load the network from a save file.
       if os.path.isfile(self.model_file_name):
         self.load()
-      else:
-        self.build()
 
     return self
 
@@ -47,7 +47,10 @@ class NetworkModel(ABC):
   '''
   def copy_weights_to(self, target):
     print('Copying weights to target.')
-    target.network.set_weights(self.network.get_weights())
+
+    # Note that pred_network and train_network share layers and hence weights,
+    # so it doesn't matter if pred_network or train_network is used here.
+    target.pred_network.set_weights(self.pred_network.get_weights())
 
   '''
    ' Save the weights to a file.  The default file name, which is passed in to
@@ -56,29 +59,32 @@ class NetworkModel(ABC):
   def save(self, model_file_name=None):
     if model_file_name is None:
       print('Saving model weights to {}.'.format(self.model_file_name))
-      self.network.save(self.model_file_name)
+      self.pred_network.save_weights(self.model_file_name)
     else:
       print('Saving model weights to {}.'.format(model_file_name))
-      self.network.save(model_file_name)
+      self.pred_network.save_weights(model_file_name)
 
   '''
    ' Load the weights from a file.
   '''
   def load(self):
     print('Loading model weights from {}.'.format(self.model_file_name))
-    self.network = tf.keras.models.load_model(self.model_file_name,
-      custom_objects={'huber_loss': huber_loss, 'huber_loss_mean': huber_loss_mean})
+    self.pred_network.load_weights(self.model_file_name)
 
   '''
    ' Make a prediction based on an observation.
   '''
   def predict(self, obs):
-    return self.network.predict(obs)
+    return self.pred_network.predict(obs)
 
   '''
    ' Train the model on a batch of inputs (observations) and expectations (reward
-   ' predictions).
+   ' predictions).  Gradients are weighted by importance sampling weights
+   ' (is_weights).
   '''
-  def train_on_batch(self, observations, expectations):
-    return self.network.train_on_batch(observations, expectations)
+  def train_on_batch(self, observations, expectations, is_weights):
+    return self.train_network.fit(
+      x=[observations, expectations, is_weights],
+      batch_size=len(observations),
+      verbose=0)
 
