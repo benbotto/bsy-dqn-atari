@@ -28,8 +28,8 @@ class TrainerAgent(Agent):
     self.tester_agent  = tester_agent
 
     # Keeps track of the best rewards during testing.
-    self._best_max_test_reward = -1000000
-    self._best_avg_test_reward = -1000000
+    self._best_max_test_reward = -1e6
+    self._best_avg_test_reward = -1e6
 
     ##
     # Tunable parameters.
@@ -61,11 +61,11 @@ class TrainerAgent(Agent):
     # epsilon decays from 1 to epsilon_min over epsilon_decay_over frames.  The
     # OpenAI baselines, however, decrease epsilon further over the next
     # epsilon_decay_over2 frames.
-    self._epsilon_decay_over  = 1000000
+    self._epsilon_decay_over  = 1e6
     self.epsilon_min          = .1
     self.epsilon_decay_rate   = get_annealing_rate(1, self.epsilon_min, self._epsilon_decay_over)
 
-    self._epsilon_decay_over2 = 24000000
+    self._epsilon_decay_over2 = 24e6
     self.epsilon_min2         = .01
     self.epsilon_decay_rate2  = get_annealing_rate(self.epsilon_min, self.epsilon_min2, self._epsilon_decay_over2)
 
@@ -73,7 +73,7 @@ class TrainerAgent(Agent):
     self.test_interval = 100
 
     # When to start testing.
-    self.test_start = 1000000
+    self.test_start = 1e6
 
     # How many episodes to test for.
     self.test_episodes = 20
@@ -90,9 +90,15 @@ class TrainerAgent(Agent):
         self.epsilon_min2)
 
   '''
+   ' PER's beta is increased from per_beta_min to 1 over the duration of the training.
+  '''
+  def get_per_beta(self, total_t):
+    return min(get_annealed_value(self.per_beta_rate, self.per_beta_min, total_t), 1)
+
+  '''
    ' Run the agent.
   '''
-  def run(self, num_frames=200000000):
+  def run(self, num_frames=200e6):
     # Number of full games played.
     episode = 0
 
