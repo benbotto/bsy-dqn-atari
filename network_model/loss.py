@@ -23,3 +23,11 @@ def huber_loss(y_true, y_pred, clip_delta=1.0):
 def huber_loss_mean(y_true, y_pred, clip_delta=1.0):
   return tf.keras.backend.mean(huber_loss(y_true, y_pred, clip_delta))
 
+'''
+ ' Importance Sampling weighted huber loss.
+'''
+def huber_loss_mean_weighted(y_true, y_pred, is_weights, clip_delta=1.0):
+  error = huber_loss(y_true, y_pred, clip_delta)
+
+  return tf.keras.backend.mean(error * is_weights)
+
