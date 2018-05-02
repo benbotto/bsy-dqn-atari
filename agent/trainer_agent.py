@@ -44,6 +44,12 @@ class TrainerAgent(Agent):
     # The size of the replay batch to train on.
     self.replay_batch_size = 32
 
+    # Beta parameter for prioritized experience replay's importance sampling
+    # weights, which is increased to 1 over the training duration.
+    self.per_beta_min      = .4
+    self.per_beta_inc_over = 50e6
+    self.per_beta_rate     = get_annealing_rate(self.per_beta_min, 1, self.per_beta_inc_over)
+
     # Discount factor.
     self.gamma = .99
 
@@ -184,7 +190,7 @@ class TrainerAgent(Agent):
             #print('Error on index {}: {}'.format(indices[i], error))
             self._memory.update(indices[i], error)
 
-          loss = self._model.train_on_batch(last_observations, target)
+          loss = self._model.train_on_batch(last_observations, target, is_weights)
           #print('Loss: {}'.format(loss))
 
           # Periodically update the target network.
