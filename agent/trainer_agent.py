@@ -41,10 +41,6 @@ class TrainerAgent(Agent):
     # Training interval, in frames.  E.g. when to train on a batch of transitions.
     self.train_interval = 4
 
-    # Generally memory samples are prioritized, but prioritization can be
-    # disabled.
-    self.use_prio = True
-
     # The size of the replay batch to train on.
     self.replay_batch_size = 32
 
@@ -144,8 +140,11 @@ class TrainerAgent(Agent):
         self._memory.add((last_obs, action, reward, new_obs, done))
 
         if self._memory.size() >= self.train_start and total_t % self.train_interval == 0:
+          # Update the beta parameter in the replay memory (for IS weights).
+          self._memory.beta = self.get_per_beta(total_t)
+
           # Random sample from replay memory to train on.
-          batch       = self._memory.get_random_sample(self.replay_batch_size, self.use_prio)
+          batch       = self._memory.get_random_sample(self.replay_batch_size)
           indices     = np.take(batch, REP_IND,     1)
           is_weights  = np.take(batch, REP_WEIGHTS, 1)
           transitions = np.take(batch, REP_TRANS,   1)
