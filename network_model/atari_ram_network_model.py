@@ -17,7 +17,6 @@ class AtariRamNetworkModel(NetworkModel):
     print('Building model.')
 
     # The observation input.
-    # IS weight per observation.
     in_obs = tf.keras.layers.Input(shape=self.get_input_shape())
 
     # When training, prioritized experience replay specifies that IS weights
