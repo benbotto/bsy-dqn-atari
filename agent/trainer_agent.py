@@ -47,8 +47,14 @@ class TrainerAgent(Agent):
     # Beta parameter for prioritized experience replay's importance sampling
     # weights, which is increased to 1 over the training duration.
     self.per_beta_min      = .4
-    self.per_beta_inc_over = 50e6
+    self.per_beta_inc_over = 10e6
     self.per_beta_rate     = get_annealing_rate(self.per_beta_min, 1, self.per_beta_inc_over)
+
+    # Alpha parameter for prioritized experience replay.  This determines how
+    # how much priority is used, where an alpha of 0 means uniform.
+    self.per_alpha_min      = .4
+    self.per_alpha_inc_over = 10e6
+    self.per_alpha_rate     = get_annealing_rate(self.per_alpha_min, 1, self.per_alpha_inc_over)
 
     # Discount factor.
     self.gamma = .99
@@ -67,7 +73,7 @@ class TrainerAgent(Agent):
     self.epsilon_min          = .1
     self.epsilon_decay_rate   = get_annealing_rate(1, self.epsilon_min, self._epsilon_decay_over)
 
-    self._epsilon_decay_over2 = 24e6
+    self._epsilon_decay_over2 = 9e6
     self.epsilon_min2         = .01
     self.epsilon_decay_rate2  = get_annealing_rate(self.epsilon_min, self.epsilon_min2, self._epsilon_decay_over2)
 
@@ -96,6 +102,12 @@ class TrainerAgent(Agent):
   '''
   def get_per_beta(self, total_t):
     return min(get_annealed_value(self.per_beta_rate, self.per_beta_min, total_t), 1)
+
+  '''
+   ' PER's alpha is increased from per_alpha_min to 1 over the duration of the training.
+  '''
+  def get_per_alpha(self, total_t):
+    return min(get_annealed_value(self.per_alpha_rate, self.per_alpha_min, total_t), 1)
 
   '''
    ' Run the agent.
@@ -146,8 +158,9 @@ class TrainerAgent(Agent):
         self._memory.add((last_obs, action, reward, new_obs, done))
 
         if self._memory.size() >= self.train_start and total_t % self.train_interval == 0:
-          # Update the beta parameter in the replay memory (for IS weights).
-          self._memory.beta = self.get_per_beta(total_t)
+          # Update the parameters in the replay memory.
+          self._memory.beta  = self.get_per_beta(total_t)
+          self._memory.alpha = self.get_per_alpha(total_t)
 
           # Random sample from replay memory to train on.
           batch       = self._memory.get_random_sample(self.replay_batch_size)
