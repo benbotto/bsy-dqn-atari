@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from network_model.network_model import NetworkModel
-from network_model.loss import huber_loss_mean_weighted, huber_loss_mean
+from network_model.loss import huber_loss_mean_weighted
 
 class AtariNetworkModel(NetworkModel):
   '''
