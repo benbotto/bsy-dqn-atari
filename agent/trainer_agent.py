@@ -78,12 +78,7 @@ class TrainerAgent(Agent):
    ' Decaying epsilon based on total timesteps.
   '''
   def get_epsilon(self, total_t):
-    if total_t < self._epsilon_decay_over:
-      return max(get_annealed_value(self.epsilon_decay_rate, 1, total_t), self.epsilon_min)
-    else:
-      return max(
-        get_annealed_value(self.epsilon_decay_rate2, self.epsilon_min, total_t - self._epsilon_decay_over),
-        self.epsilon_min2)
+    return max(get_annealed_value(self.epsilon_decay_rate, 1, total_t), self.epsilon_min)
 
   '''
    ' PER's beta is increased from per_beta_min to 1 over the duration of the training.
