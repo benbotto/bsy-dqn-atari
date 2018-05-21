@@ -60,11 +60,9 @@ class TrainerAgent(Agent):
     self.save_weights_interval = 100000
 
     # Per the Nature paper, an epsilon-greedy method is used to explore, and
-    # epsilon decays from 1 to epsilon_min over epsilon_decay_over frames.  The
-    # OpenAI baselines, however, decrease epsilon further over the next
-    # epsilon_decay_over2 frames.
-    self._epsilon_decay_over  = 1e6
-    self.epsilon_min          = .1
+    # epsilon decays from 1 to epsilon_min over epsilon_decay_over frames.
+    self._epsilon_decay_over  = 20e6
+    self.epsilon_min          = .01
     self.epsilon_decay_rate   = get_annealing_rate(1, self.epsilon_min, self._epsilon_decay_over)
 
     self._epsilon_decay_over2 = 9e6
