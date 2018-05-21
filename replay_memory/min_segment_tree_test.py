@@ -1,5 +1,5 @@
 import numpy as np
-from min_segment_tree import MinSegmentTree
+from replay_memory.min_segment_tree import MinSegmentTree
 
 # Tests use the following tree.
 # Indices top to bottom left to right, 0 - 14.  Priorities are in the leaf
