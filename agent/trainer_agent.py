@@ -47,14 +47,8 @@ class TrainerAgent(Agent):
     # Beta parameter for prioritized experience replay's importance sampling
     # weights, which is increased to 1 over the training duration.
     self.per_beta_min      = .4
-    self.per_beta_inc_over = 10e6
+    self.per_beta_inc_over = 200e6
     self.per_beta_rate     = get_annealing_rate(self.per_beta_min, 1, self.per_beta_inc_over)
-
-    # Alpha parameter for prioritized experience replay.  This determines how
-    # how much priority is used, where an alpha of 0 means uniform.
-    self.per_alpha_min      = .4
-    self.per_alpha_inc_over = 10e6
-    self.per_alpha_rate     = get_annealing_rate(self.per_alpha_min, 1, self.per_alpha_inc_over)
 
     # Discount factor.
     self.gamma = .99
