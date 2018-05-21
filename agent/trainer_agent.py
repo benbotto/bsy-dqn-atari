@@ -87,12 +87,6 @@ class TrainerAgent(Agent):
     return min(get_annealed_value(self.per_beta_rate, self.per_beta_min, total_t), 1)
 
   '''
-   ' PER's alpha is increased from per_alpha_min to 1 over the duration of the training.
-  '''
-  def get_per_alpha(self, total_t):
-    return min(get_annealed_value(self.per_alpha_rate, self.per_alpha_min, total_t), 1)
-
-  '''
    ' Run the agent.
   '''
   def run(self, num_frames=200e6):
@@ -142,8 +136,7 @@ class TrainerAgent(Agent):
 
         if self._memory.size() >= self.train_start and total_t % self.train_interval == 0:
           # Update the parameters in the replay memory.
-          self._memory.beta  = self.get_per_beta(total_t)
-          self._memory.alpha = self.get_per_alpha(total_t)
+          self._memory.beta = self.get_per_beta(total_t)
 
           # Random sample from replay memory to train on.
           batch       = self._memory.get_random_sample(self.replay_batch_size)
