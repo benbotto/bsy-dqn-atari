@@ -65,12 +65,8 @@ class TrainerAgent(Agent):
     self.epsilon_min          = .01
     self.epsilon_decay_rate   = get_annealing_rate(1, self.epsilon_min, self._epsilon_decay_over)
 
-    self._epsilon_decay_over2 = 9e6
-    self.epsilon_min2         = .01
-    self.epsilon_decay_rate2  = get_annealing_rate(self.epsilon_min, self.epsilon_min2, self._epsilon_decay_over2)
-
-    # How often to test the target model (in episodes).
-    self.test_interval = 100
+    # How often to test the target model.
+    self.test_interval = 1e5
 
     # When to start testing.
     self.test_start = 1e6
