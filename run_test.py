@@ -1,0 +1,4 @@
+import replay_memory.prioritized_replay_memory_test
+import replay_memory.sum_segment_tree_test
+import replay_memory.min_segment_tree_test
+import replay_memory.max_segment_tree_test
