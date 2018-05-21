@@ -3,7 +3,7 @@ import numpy as np
 from collections import deque
 
 # Keep a running average reward over this may episodes.
-AVG_REWARD_EPISODES = 500
+AVG_REWARD_EPISODES = 100
 
 '''
  ' Abstract base class for Deep-Q Learning Agents.
