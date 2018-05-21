@@ -190,6 +190,13 @@ class TrainerAgent(Agent):
           if total_t % self.save_weights_interval == 0:
             self._model.save()
 
+        # Periodically test the agent.
+        if total_t >= self.test_start and total_t % self.test_interval == 0:
+          print('Testing model.')
+          self.test()
+          print('Max Test Reward: {} Max Test Average: {}'
+            .format(self._best_max_test_reward, self._best_avg_test_reward))
+
         last_obs = new_obs
 
       # Episode complete.  Track reward info.
@@ -197,12 +204,6 @@ class TrainerAgent(Agent):
 
       print('Episode: {} Timesteps: {} Total timesteps: {} Reward: {} Best reward: {} Average: {}'
         .format(episode, t, total_t, episode_reward, self.get_max_reward(), self.get_average_reward()))
-
-      if total_t >= self.test_start and episode % self.test_interval == 0:
-        print('Testing model.')
-        self.test()
-        print('Max Test Reward: {} Max Test Average: {}'
-          .format(self._best_max_test_reward, self._best_avg_test_reward))
 
   '''
    ' Test the model.
