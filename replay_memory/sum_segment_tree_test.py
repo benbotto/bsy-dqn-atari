@@ -1,5 +1,5 @@
 import numpy as np
-from sum_segment_tree import SumSegmentTree
+from replay_memory.sum_segment_tree import SumSegmentTree
 
 # Tests use the following tree.
 # Indices top to bottom left to right, 0 - 14.  Sums are in the
