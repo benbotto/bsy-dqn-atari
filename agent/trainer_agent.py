@@ -176,11 +176,11 @@ class TrainerAgent(Agent):
             # a large error, then the transition was unexpected and thus a lot
             # can be learned from it.
             error = np.abs(target[i][transitions[i][REP_ACTION]] - predicted)
-            #print('Error on index {}: {}'.format(indices[i], error))
+            #print('Error on index {}: {} IS weight: {}'.format(indices[i], error, is_weights[i]))
             self._memory.update(indices[i], error)
 
           loss = self._model.train_on_batch(last_observations, target, is_weights)
-          #print('Loss: {}'.format(loss))
+          #print('Loss: {}'.format(loss.history['loss']))
 
           # Periodically update the target network.
           if total_t % self.target_upd_interval == 0:
