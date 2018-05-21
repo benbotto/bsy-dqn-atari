@@ -1,6 +1,7 @@
 import numpy as np
 from replay_memory.sum_segment_tree import SumSegmentTree
 from replay_memory.min_segment_tree import MinSegmentTree
+from replay_memory.max_segment_tree import MaxSegmentTree
 
 '''
  ' Prioritized experience replay using a SumSegmentTree for prioritized
@@ -11,20 +12,23 @@ from replay_memory.min_segment_tree import MinSegmentTree
  '   https://jaromiru.com/2016/11/07/lets-make-a-dqn-double-learning-and-prioritized-experience-replay/
  ' OpenAI Baselines has an implementation with IS:
  '   https://github.com/openai/baselines/blob/master/baselines/common/segment_tree.py
- ' Parameters used in Rainbow: https://arxiv.org/pdf/1710.02298.pdf
+ ' Parameters come from the Tuned Parameters table in the PER paper (above).
 '''
 class PrioritizedReplayMemory():
   '''
    ' Init.
   '''
-  def __init__(self, capacity, epsilon = .01, alpha = .5, beta = .4):
+  def __init__(self, capacity, epsilon = 1e-6, alpha = .6, beta = .4):
     self.epsilon   = epsilon
     self.alpha     = alpha
     self.beta      = beta
 
     self._sum_tree = SumSegmentTree(capacity)
     self._min_tree = MinSegmentTree(capacity)
-    self._max_prio = 1.0
+    self._max_tree = MaxSegmentTree(capacity)
+
+    # Initial samples (prior to training) get added with this priority.
+    self._max_prio = (1.0 + self.epsilon) ** self.alpha
 
   '''
    ' Number of items in memory.
@@ -39,9 +43,10 @@ class PrioritizedReplayMemory():
     # The item is added to the sum tree with maximum priority.
     ind = self._sum_tree.add(item, self._max_prio)
 
-    # The priority is also kept in the min tree so that the minimum priority
-    # can be kept track of.
+    # The priorities are also also kept min and max trees so that the minimum
+    # and maximum priorities can be kept track of.
     self._min_tree.add(None, self._max_prio)
+    self._max_tree.add(None, self._max_prio)
 
     return ind
 
@@ -107,9 +112,10 @@ class PrioritizedReplayMemory():
     # items are sampled uniformly.
     prio = (error + self.epsilon) ** self.alpha
 
-    # Update the priority in both trees.
+    # Update the priority in the segment trees.
     self._sum_tree.update(ind, prio)
     self._min_tree.update(ind, prio)
+    self._max_tree.update(ind, prio)
 
-    self._max_prio = max(self._max_prio, prio)
+    self._max_prio = self._max_tree.get_base_prio()
 
