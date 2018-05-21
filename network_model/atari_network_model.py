@@ -31,9 +31,9 @@ class AtariNetworkModel(NetworkModel):
     conv1 = tf.keras.layers.Conv2D(filters=32, kernel_size=8, strides=4,
       activation="relu", data_format="channels_first")(norm)
     conv2 = tf.keras.layers.Conv2D(filters=64, kernel_size=4, strides=2,
-      activation="relu")(conv1)
+      activation="relu", data_format="channels_first")(conv1)
     conv3 = tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=1,
-      activation="relu")(conv2)
+      activation="relu", data_format="channels_first")(conv2)
 
     # Flatten, and move to the fully-connected part of the network.
     flatten = tf.keras.layers.Flatten()(conv3)
