@@ -61,9 +61,13 @@ class TrainerAgent(Agent):
 
     # Per the Nature paper, an epsilon-greedy method is used to explore, and
     # epsilon decays from 1 to epsilon_min over epsilon_decay_over frames.
-    self._epsilon_decay_over  = 20e6
-    self.epsilon_min          = .01
+    self._epsilon_decay_over  = 1e6
+    self.epsilon_min          = .1
     self.epsilon_decay_rate   = get_annealing_rate(1, self.epsilon_min, self._epsilon_decay_over)
+
+    self._epsilon_decay_over2 = 9e6
+    self.epsilon_min2         = .01
+    self.epsilon_decay_rate2  = get_annealing_rate(self.epsilon_min, self.epsilon_min2, self._epsilon_decay_over2)
 
     # How often to test the target model.
     self.test_interval = 1e5
@@ -78,8 +82,12 @@ class TrainerAgent(Agent):
    ' Decaying epsilon based on total timesteps.
   '''
   def get_epsilon(self, total_t):
-    return max(get_annealed_value(self.epsilon_decay_rate, 1, total_t), self.epsilon_min)
-
+    if total_t < self._epsilon_decay_over:
+      return max(get_annealed_value(self.epsilon_decay_rate, 1, total_t), self.epsilon_min)
+    else:
+      return max(
+        get_annealed_value(self.epsilon_decay_rate2, self.epsilon_min, total_t - self._epsilon_decay_over),
+        self.epsilon_min2)
   '''
    ' PER's beta is increased from per_beta_min to 1 over the duration of the training.
   '''
