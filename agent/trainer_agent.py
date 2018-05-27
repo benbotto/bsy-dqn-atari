@@ -153,8 +153,8 @@ class TrainerAgent(Agent):
           transitions = np.take(batch, REP_TRANS,   1)
 
           # Array of old and new observations.
-          last_observations = np.array([rep[REP_LASTOBS] for rep in transitions])
-          new_observations  = np.array([rep[REP_NEWOBS] for rep in transitions])
+          last_observations = np.take(transitions, REP_LASTOBS, 1)
+          new_observations  = np.take(transitions, REP_NEWOBS,  1)
 
           # Predictions from the old states, which will be updated to act as the
           # training target. Using Double DQN.
