@@ -57,7 +57,7 @@ class TrainerAgent(Agent):
     self.target_upd_interval = 10000
 
     # How often to save network weights.
-    self.save_weights_interval = 100000
+    self.save_weights_interval = 1e6
 
     # Per the Nature paper, an epsilon-greedy method is used to explore, and
     # epsilon decays from 1 to epsilon_min over epsilon_decay_over frames.
