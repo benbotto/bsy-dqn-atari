@@ -42,7 +42,7 @@ class TrainerAgent(Agent):
     self.train_interval = 4
 
     # The size of the replay batch to train on.
-    self.replay_batch_size = 32
+    self.replay_batch_size = 64
 
     # Beta parameter for prioritized experience replay's importance sampling
     # weights, which is increased to 1 over the training duration.
@@ -65,7 +65,7 @@ class TrainerAgent(Agent):
     self.epsilon_min          = .1
     self.epsilon_decay_rate   = get_annealing_rate(1, self.epsilon_min, self._epsilon_decay_over)
 
-    self._epsilon_decay_over2 = 9e6
+    self._epsilon_decay_over2 = 24e6
     self.epsilon_min2         = .01
     self.epsilon_decay_rate2  = get_annealing_rate(self.epsilon_min, self.epsilon_min2, self._epsilon_decay_over2)
 
@@ -88,6 +88,7 @@ class TrainerAgent(Agent):
       return max(
         get_annealed_value(self.epsilon_decay_rate2, self.epsilon_min, total_t - self._epsilon_decay_over),
         self.epsilon_min2)
+
   '''
    ' PER's beta is increased from per_beta_min to 1 over the duration of the training.
   '''
