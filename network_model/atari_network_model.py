@@ -7,7 +7,7 @@ class AtariNetworkModel(NetworkModel):
   '''
    ' Init.
   '''
-  def __init__(self, model_file_name, env, name, learn_rate=1e-4, decay=0.0):
+  def __init__(self, model_file_name, env, name, learn_rate=5e-5, decay=0.0):
     super().__init__(model_file_name, env, name, learn_rate, decay)
 
   '''
@@ -29,11 +29,11 @@ class AtariNetworkModel(NetworkModel):
 
     # Convolutional layers per the Nature paper on DQN.
     conv1 = tf.keras.layers.Conv2D(filters=32, kernel_size=8, strides=4,
-      activation="relu", data_format="channels_first")(norm)
+      activation="relu", data_format="channels_first", padding="same")(norm)
     conv2 = tf.keras.layers.Conv2D(filters=64, kernel_size=4, strides=2,
-      activation="relu", data_format="channels_first")(conv1)
+      activation="relu", data_format="channels_first", padding="same")(conv1)
     conv3 = tf.keras.layers.Conv2D(filters=64, kernel_size=3, strides=1,
-      activation="relu", data_format="channels_first")(conv2)
+      activation="relu", data_format="channels_first", padding="same")(conv2)
 
     # Flatten, and move to the fully-connected part of the network.
     flatten = tf.keras.layers.Flatten()(conv3)
