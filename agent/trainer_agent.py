@@ -73,7 +73,7 @@ class TrainerAgent(Agent):
     self.test_interval = 1e5
 
     # When to start testing.
-    self.test_start = 5e6
+    self.test_start = 20e6
 
     # How many episodes to test for.
     self.test_episodes = 20
