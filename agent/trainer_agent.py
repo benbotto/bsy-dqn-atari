@@ -76,7 +76,7 @@ class TrainerAgent(Agent):
     self.test_start = 5e6
 
     # How many episodes to test for.
-    self.test_episodes = 20
+    self.test_episodes = 50
 
   '''
    ' Decaying epsilon based on total timesteps.
