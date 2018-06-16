@@ -75,7 +75,7 @@ class NetworkModel(ABC):
    ' Make a prediction based on an observation.
   '''
   def predict(self, obs):
-    return self.pred_network.predict(obs)
+    return self.pred_network.predict(obs, batch_size=len(obs))
 
   '''
    ' Train the model on a batch of inputs (observations) and expectations (reward
