@@ -21,6 +21,7 @@ class Agent(ABC):
 
     # For keeping track of the maximum reward over time.
     self._max_reward = -1000000
+    self._max_avg    = -1000000
 
   '''
    ' Get epsilon, which may be based on timestep.
@@ -45,11 +46,22 @@ class Agent(ABC):
     if reward > self._max_reward:
       self._max_reward = reward
 
+    avg = self.get_average_reward()
+
+    if avg > self._max_avg:
+      self._max_avg = avg
+
   '''
    ' Get the maximum reward.
   '''
   def get_max_reward(self):
     return self._max_reward
+
+  '''
+   ' Get the maximum average.
+  '''
+  def get_max_average(self):
+    return self._max_avg
 
   '''
    ' Get the average reward.
