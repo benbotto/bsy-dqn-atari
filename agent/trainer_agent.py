@@ -27,6 +27,9 @@ class TrainerAgent(Agent):
     self._memory       = memory
     self.tester_agent  = tester_agent
 
+    # The weights are saved any time the average increases.
+    self._best_avg = -1e6
+
     # Keeps track of the best rewards during testing.
     self._best_max_test_reward = -1e6
     self._best_avg_test_reward = -1e6
@@ -55,9 +58,6 @@ class TrainerAgent(Agent):
 
     # How often to update the target network (in timesteps).
     self.target_upd_interval = 10000
-
-    # How often to save network weights.
-    self.save_weights_interval = 1e6
 
     # Per the Nature paper, an epsilon-greedy method is used to explore, and
     # epsilon decays from 1 to epsilon_min over epsilon_decay_over frames.
@@ -105,6 +105,9 @@ class TrainerAgent(Agent):
     # Total timesteps.
     total_t = 0
 
+    # Test once up front to render.  A render is needed before TF locks the GPU.
+    self.tester_agent.run(1)
+
     while total_t < num_frames:
       episode       += 1
       done           = False
@@ -118,7 +121,7 @@ class TrainerAgent(Agent):
         t       += 1
         total_t += 1
 
-        self._env.render()
+        #self._env.render()
 
         # Choose an action randomly sometimes for exploration, but other times
         # predict the action using the network model.
@@ -195,10 +198,6 @@ class TrainerAgent(Agent):
           if total_t % self.target_upd_interval == 0:
             self._model.copy_weights_to(self._target_model)
 
-          # Periodically save the network weights.
-          if total_t % self.save_weights_interval == 0:
-            self._model.save()
-
         # Periodically test the agent.
         if total_t >= self.test_start and total_t % self.test_interval == 0:
           print('Testing model.')
@@ -211,8 +210,15 @@ class TrainerAgent(Agent):
       # Episode complete.  Track reward info.
       self.track_reward(episode_reward)
 
-      print('Episode: {} Timesteps: {} Total timesteps: {} Reward: {} Best reward: {} Average: {}'
-        .format(episode, t, total_t, episode_reward, self.get_max_reward(), self.get_average_reward()))
+      # Save when the average increases.
+      avg = self.get_average_reward()
+
+      if avg > self._best_avg:
+        self._best_avg = avg
+        self._model.save()
+
+      print('Episode: {} Timesteps: {} Total timesteps: {} Reward: {} Best reward: {} Avg: {} Best Avg: {}'
+        .format(episode, t, total_t, episode_reward, self.get_max_reward(), self.get_average_reward(), self.get_max_average()))
 
   '''
    ' Test the model.
