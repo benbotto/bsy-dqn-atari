@@ -70,13 +70,13 @@ class TrainerAgent(Agent):
     self.epsilon_decay_rate2  = get_annealing_rate(self.epsilon_min, self.epsilon_min2, self._epsilon_decay_over2)
 
     # How often to test the target model.
-    self.test_interval = 1e5
+    self.test_interval = 250e3
 
     # When to start testing.
     self.test_start = 20e6
 
-    # How many episodes to test for.
-    self.test_episodes = 50
+    # How many frames to test for.
+    self.test_frames = 200e3
 
   '''
    ' Decaying epsilon based on total timesteps.
@@ -225,7 +225,7 @@ class TrainerAgent(Agent):
   '''
   def test(self):
     self.tester_agent.reset_rewards()
-    self.tester_agent.run(self.test_episodes)
+    self.tester_agent.run(self.test_frames)
 
     if self.tester_agent.get_max_reward() > self._best_max_test_reward:
       self._best_max_test_reward = self.tester_agent.get_max_reward()
