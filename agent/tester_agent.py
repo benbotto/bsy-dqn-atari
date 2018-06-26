@@ -25,14 +25,14 @@ class TesterAgent(Agent):
   '''
    ' Run the agent.
   '''
-  def run(self, num_episodes=100):
+  def run(self, num_frames=250e3):
     # Number of full games played.
     episode = 0
 
     # Total timesteps.
     total_t = 0
 
-    while episode < num_episodes:
+    while total_t < num_frames:
       episode       += 1
       done           = False
       t              = 0 # t is the timestep.
