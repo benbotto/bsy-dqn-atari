@@ -1,4 +1,3 @@
-Potentially getting dupes in memory samples (testing ongoing).  May need to use a MaxSegmentTree.
 Try cropping the images to remove the scores.
 Change no-ops to 30 when training (10 on test).
 Log the clipped score so that the output can be compared against OpenAI
