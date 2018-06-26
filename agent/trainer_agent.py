@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 from agent.agent import Agent
 from agent.tester_agent import TesterAgent
 from util.math_utils import get_annealing_rate, get_annealed_value
@@ -33,6 +34,9 @@ class TrainerAgent(Agent):
     # Keeps track of the best rewards during testing.
     self._best_max_test_reward = -1e6
     self._best_avg_test_reward = -1e6
+
+    # Keeps track of training averages/frames for plotting progress.
+    self._test_averages = []
 
     ##
     # Tunable parameters.
@@ -238,4 +242,14 @@ class TrainerAgent(Agent):
       self._best_avg_test_reward = self.tester_agent.get_average_reward()
       model_file_name = self._target_model.model_file_name.replace('.h5', '.avg.h5')
       self._target_model.save(model_file_name)
+
+    # Keep track of the testing averages and plot them.
+    self._test_averages.append(self.tester_agent.get_average_reward())
+    x = [self.test_start + self.test_interval * i for i in range(len(self._test_averages))]
+
+    plt.close()
+    plt.plot(x, self._test_averages)
+    plt.xlabel('Frames')
+    plt.ylabel('Test Averages')
+    plt.show(block=False)
 
