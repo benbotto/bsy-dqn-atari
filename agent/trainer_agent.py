@@ -247,9 +247,10 @@ class TrainerAgent(Agent):
     self._test_averages.append(self.tester_agent.get_average_reward())
     x = [self.test_start + self.test_interval * i for i in range(len(self._test_averages))]
 
-    plt.close()
+    #plt.close()
     plt.plot(x, self._test_averages)
     plt.xlabel('Frames')
     plt.ylabel('Test Averages')
-    plt.show(block=False)
+    #plt.show(block=False)
+    plt.savefig(self._target_model.model_file_name.replace('.h5', '.png'))
 
