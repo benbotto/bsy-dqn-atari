@@ -1,5 +1,6 @@
 import sys
 import gym
+import numpy as np
 from network_model.atari_network_model import AtariNetworkModel
 from env.fire_to_start_env import FireToStartEnv
 from env.no_op_start_env import NoOpStartEnv
@@ -14,6 +15,8 @@ def main(argv):
     print('Usage: {} <environment-name> <weights-file>'.format(argv[0]))
     return
 
+  np.random.seed(0)
+
   # Create the environment, wrapped per the Nature paper.
   env = gym.make(argv[1])
   env = FireToStartEnv(env)
@@ -21,6 +24,7 @@ def main(argv):
   env = FrameSkipEnv(env)
   env = PreprocessedFrameEnv(env)
   env = FrameStackEnv(env)
+  #env = gym.wrappers.Monitor(env, './', video_callable=lambda episode_id: episode_id == 40)
 
   # Model file to load weights from.
   model_file_name = argv[2]
