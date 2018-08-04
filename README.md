@@ -27,3 +27,9 @@ The scoreboard is not clipped out of image samples.  In [the original DQN implem
   5) The last four images are stacked together to produce a sample.  This way velocity can be determined.
 
 bsy-atari-dqn differs in step 4.  The images are scaled down to 84x84 directly rather than clipping out a square.
+
+# Performance
+
+|Game|High Score|100-Game Average|High Training Average (1 life)|Random Seed|Test Command|
+|----|----------|----------------|------------------------------|-----------|------------|
+|Breakout|864|492|403|0|python3 ./test.py BreakoutNoFrameskip-v4 asset/pretrained-model/BreakoutNoFrameskip-v4__2018_07_01__08_10.avg.h5|
