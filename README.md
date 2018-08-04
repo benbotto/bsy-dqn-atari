@@ -32,4 +32,4 @@ bsy-atari-dqn differs in step 4.  The images are scaled down to 84x84 directly r
 
 |Game|High Score|100-Game Average|High Training Average (1 life)|Random Seed|Test Command|Version (Tag)|
 |----|----------|----------------|------------------------------|-----------|------------|-------------|
-|Breakout|864|492|403|0|python3 ./test.py BreakoutNoFrameskip-v4 asset/pretrained-model/BreakoutNoFrameskip-v4__2018_07_01__08_10.avg.h5|2.0.1|
+|Breakout|864|486±20|403|0|python3 ./test.py BreakoutNoFrameskip-v4 asset/pretrained-model/BreakoutNoFrameskip-v4__2018_07_01__08_10.avg.h5|2.0.1|
