@@ -3,6 +3,7 @@
 A deep-q network (DQN) for the OpenAI Gym Atari domain.  bsy-dqn-atari learns to play Atari games from pixels at or above human levels.
 
 [![Breakout 864 Score](https://github.com/benbotto/bsy-dqn-atari/raw/readme/asset/img/BreakoutNoFrameskip-v4__2018_07_01__08_10.max__Episode_41__Score_864.gif)](https://youtu.be/CP3nZMa3cis)
+[![Pong 21 Score](https://github.com/benbotto/bsy-dqn-atari/raw/readme/asset/img/PongNoFrameskip-v4__2018_08_16__06_06__Episode_2__Score_21.gif)](https://youtu.be/dFqGa-mQx58)
 
 # About
 
