@@ -4,6 +4,7 @@ A deep-q network (DQN) for the OpenAI Gym Atari domain.  bsy-dqn-atari learns to
 
 [![Breakout 864 Score](https://github.com/benbotto/bsy-dqn-atari/raw/master/asset/img/BreakoutNoFrameskip-v4__2018_07_01__08_10.max__Episode_41__Score_864.gif)](https://youtu.be/CP3nZMa3cis)
 [![Pong 21 Score](https://github.com/benbotto/bsy-dqn-atari/raw/master/asset/img/PongNoFrameskip-v4__2018_08_16__06_06__Episode_2__Score_21.gif)](https://youtu.be/dFqGa-mQx58)
+[![Space Invaders 3230 Score](https://github.com/benbotto/bsy-dqn-atari/raw/master/asset/img/SpaceInvadersNoFrameskip-v4__2018_08_22__17_51.avg__Episode_78__Score_3230.gif)](https://youtu.be/CI34VXEh61A)
 
 # About
 
@@ -35,4 +36,5 @@ bsy-atari-dqn differs in step 4.  The images are scaled down to 84x84 directly r
 |----|----------|----------------|------------------------------|-----------|------------|-------------|
 |Breakout|864|486|403|0|python3 ./test.py BreakoutNoFrameskip-v4 asset/pretrained-model/BreakoutNoFrameskip-v4__2018_07_01__08_10.avg.h5|2.0.1|
 |Pong|21|20.79|20|0|python3 ./test.py PongNoFrameskip-v4 asset/pretrained-model/PongNoFrameskip-v4__2018_08_16__06_06.h5|2.0.1|
+|Space Invaders|3230|2772|2340|0|python3 ./test.py SpaceInvadersNoFrameskip-v4 asset/pretrained-model/SpaceInvadersNoFrameskip-v4__2018_08_22__17_51.avg.h5|2.0.1|
 
