@@ -37,4 +37,5 @@ bsy-atari-dqn differs in step 4.  The images are scaled down to 84x84 directly r
 |Breakout|864|486|403|0|python3 ./test.py BreakoutNoFrameskip-v4 asset/pretrained-model/BreakoutNoFrameskip-v4__2018_07_01__08_10.avg.h5|2.0.1|
 |Pong|21|20.79|20|0|python3 ./test.py PongNoFrameskip-v4 asset/pretrained-model/PongNoFrameskip-v4__2018_08_16__06_06.h5|2.0.1|
 |Space Invaders|3230|2772|2340|0|python3 ./test.py SpaceInvadersNoFrameskip-v4 asset/pretrained-model/SpaceInvadersNoFrameskip-v4__2018_08_22__17_51.avg.h5|2.0.1|
+|Robotank|72|53|33.97|0|python3 ./test.py RobotankNoFrameskip-v4 ./asset/pretrained-model/RobotankNoFrameskip-v4__2018_09_14__09_20.avg.h5|2.0.1|
 
