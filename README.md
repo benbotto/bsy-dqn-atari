@@ -5,6 +5,7 @@ A deep-q network (DQN) for the OpenAI Gym Atari domain.  bsy-dqn-atari learns to
 [![Breakout 864 Score](https://github.com/benbotto/bsy-dqn-atari/raw/master/asset/img/BreakoutNoFrameskip-v4__2018_07_01__08_10.max__Episode_41__Score_864.gif)](https://youtu.be/CP3nZMa3cis)
 [![Pong 21 Score](https://github.com/benbotto/bsy-dqn-atari/raw/master/asset/img/PongNoFrameskip-v4__2018_08_16__06_06__Episode_2__Score_21.gif)](https://youtu.be/dFqGa-mQx58)
 [![Space Invaders 3230 Score](https://github.com/benbotto/bsy-dqn-atari/raw/master/asset/img/SpaceInvadersNoFrameskip-v4__2018_08_22__17_51.avg__Episode_78__Score_3230.gif)](https://youtu.be/CI34VXEh61A)
+[![Robotank 72 Score](https://github.com/benbotto/bsy-dqn-atari/raw/master/asset/img/RobotankNoFrameskip-v4__2018_09_14__09_20.avg__Episode_26__Score_72.gif)](https://youtu.be/BKiGcVgtBYQ)
 
 # About
 
